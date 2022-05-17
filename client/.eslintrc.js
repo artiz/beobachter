@@ -3,7 +3,7 @@ module.exports = {
         browser: true,
         es2021: true,
     },
-    extends: ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "airbnb"],
+    extends: ["plugin:react/recommended", "plugin:@typescript-eslint/recommended"],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaVersion: 2020,
@@ -15,9 +15,8 @@ module.exports = {
     plugins: ["react", "@typescript-eslint"],
     rules: {
         "no-use-before-define": "off",
-        "no-any": true,
+        "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: false }],
         "react/jsx-filename-extension": ["warn", { extensions: [".tsx"] }],
-        "import/extensions": ["never", "ignorePackages"],
-        "import/ignore": [],
+        "import/extensions": ["off", "ignorePackages"],
     },
 };

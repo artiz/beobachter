@@ -12,7 +12,6 @@
         "@types/react-dom": "^18.0.4",
         "husky": "^8.0.1",
         "lint-staged": "^12.4.1",
-        "prettier": "^2.6.2",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-scripts": "5.0.1",
@@ -21,7 +20,7 @@
     },
     "lint-staged": {
         "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-            "prettier --write"
+            "eslint --fix"
         ]
     },
     "scripts": {
@@ -52,7 +51,6 @@
         "@typescript-eslint/parser": "^5.24.0",
         "autoprefixer": "^10.4.7",
         "eslint": "^8.15.0",
-        "eslint-config-airbnb": "^19.0.4",
         "eslint-import-resolver-typescript": "^2.7.1",
         "eslint-plugin-import": "^2.26.0",
         "eslint-plugin-jsx-a11y": "^6.5.1",
