@@ -237,7 +237,9 @@ function App() {
                                         <h3 className="font-bold text-3xl text-gray-600">
                                             2{" "}
                                             <span className="text-yellow-600">
-                                                <i className="fas fa-caret-up"></i>
+                                                <i>
+                                                    <Icon icon={["fas", "caret-up"]} />
+                                                </i>
                                             </span>
                                         </h3>
                                     </div>
@@ -249,7 +251,9 @@ function App() {
                                 <div className="flex flex-row items-center">
                                     <div className="flex-shrink pr-4">
                                         <div className="rounded p-3 bg-blue-600">
-                                            <i className="fas fa-server fa-2x fa-fw fa-inverse"></i>
+                                            <i>
+                                                <Icon icon={["fas", "server"]} inverse={true} size="2x" />
+                                            </i>
                                         </div>
                                     </div>
                                     <div className="flex-1 text-right md:text-center">
@@ -264,7 +268,9 @@ function App() {
                                 <div className="flex flex-row items-center">
                                     <div className="flex-shrink pr-4">
                                         <div className="rounded p-3 bg-indigo-600">
-                                            <i className="fas fa-tasks fa-2x fa-fw fa-inverse"></i>
+                                            <i>
+                                                <Icon icon={["fas", "tasks"]} inverse={true} size="2x" />
+                                            </i>
                                         </div>
                                     </div>
                                     <div className="flex-1 text-right md:text-center">
@@ -279,7 +285,9 @@ function App() {
                                 <div className="flex flex-row items-center">
                                     <div className="flex-shrink pr-4">
                                         <div className="rounded p-3 bg-red-600">
-                                            <i className="fas fa-inbox fa-2x fa-fw fa-inverse"></i>
+                                            <i>
+                                                <Icon icon={["fas", "inbox"]} inverse={true} size="2x" />
+                                            </i>
                                         </div>
                                     </div>
                                     <div className="flex-1 text-right md:text-center">
@@ -287,7 +295,9 @@ function App() {
                                         <h3 className="font-bold text-3xl text-gray-600">
                                             3{" "}
                                             <span className="text-red-500">
-                                                <i className="fas fa-caret-up"></i>
+                                                <i className="fas fa-caret-up">
+                                                    <Icon icon={["fas", "caret-up"]} />
+                                                </i>
                                             </span>
                                         </h3>
                                     </div>
