@@ -10,7 +10,6 @@ from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app import tasks
 
-
 app = FastAPI(
     title=settings.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api"
 )
@@ -45,5 +44,7 @@ app.include_router(
 )
 app.include_router(auth_router, prefix="/api", tags=["auth"])
 
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
+    # celery_app.autodiscover_tasks()
