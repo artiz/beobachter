@@ -3,26 +3,14 @@ import json
 import redis
 from datetime import datetime, timezone
 
-from urllib.parse import urlparse
 from app.core.config import settings
-
-
-class Metrics:
-    cpu_perc: float  # percent
-    vm_perc: float  # percent
-    ts: int
-
-    def __str__(self) -> None:
-        return f"CPU%: {self.cpu_perc}, VM%: {self.vm_perc}"
+from app.core.schemas.metrics import PerfMetrics
 
 
 class PerfMetricsLoader:
     def __init__(self) -> None:
-        u = urlparse(settings.REDIS_URI)
-        self.r = redis.Redis(host=u.hostname, port=u.port)
+        self.r = redis.Redis.from_url(settings.REDIS_URI)
         self.start = self.utc_now()
-        # self.ps = self.r.pubsub()
-        # ps.subscribe({ [settings.PERF_DATA_CHANNEL]: handle_perf_sub })
 
     def load(self) -> None:
         m = self._get_metrics()
@@ -31,12 +19,14 @@ class PerfMetricsLoader:
         offset = m.ts - self.start
         exp = self.get_sparse_expiration(offset)
         self.r.set(settings.PERF_DATA_PREFIX + str(m.ts), js, ex=exp)
-        self.r.publish(settings.PERF_DATA_CHANNEL, js)
+
+        if offset % settings.PERF_DATA_PUBLISH_STEP == 0:
+            self.r.publish(settings.PERF_DATA_CHANNEL, js)
 
     def utc_now(self) -> int:
         return int(datetime.now(timezone.utc).timestamp())
 
-    def get_sparse_expiration(self, period: int) -> Metrics:
+    def get_sparse_expiration(self, period: int) -> PerfMetrics:
         """Calc sparsed expiration to store time series in Redis"""
         # TODO: move to helper
 
@@ -56,11 +46,12 @@ class PerfMetricsLoader:
 
         return exp
 
-    def _get_metrics(self) -> Metrics:
+    def _get_metrics(self) -> PerfMetrics:
         mem = psutil.virtual_memory()
-        m = Metrics()
-        m.ts = self.utc_now()
-        m.cpu_perc = psutil.cpu_percent(settings.PERF_DATA_INTERVAL)
-        m.vm_perc = mem.percent
+        m = PerfMetrics(
+            cpu_perc=psutil.cpu_percent(),
+            vm_perc=mem.percent,
+            ts=self.utc_now(),
+        )
 
         return m

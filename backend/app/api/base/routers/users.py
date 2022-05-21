@@ -9,7 +9,7 @@ from app.db.crud import (
     delete_user,
     edit_user,
 )
-from app.db.schemas import UserCreate, UserEdit, User, UserOut
+from app.core.schemas.schemas import UserCreate, UserEdit, User, UserOut
 from app.core.auth import get_current_active_user, get_current_active_superuser
 
 users_router = r = APIRouter()
