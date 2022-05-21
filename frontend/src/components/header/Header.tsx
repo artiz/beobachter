@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 
 const { PUBLIC_URL, REACT_APP_WEBSITE_NAME } = process.env;
 
 function Header() {
+    const [userMenuCls, setUserMenuCls] = useState<string>("invisible");
+
+    const handleUserClick = useCallback(() => {
+        setUserMenuCls(userMenuCls ? "" : "invisible");
+    }, [userMenuCls]);
+
     return (
         <nav id="header" className="bg-gray-900 fixed w-full z-10 top-0 shadow">
-            <div className="w-full container mx-auto flex flex-wrap items-center mt-0 pt-3 pb-3 md:pb-0">
+            <div className="w-full container mx-auto flex flex-wrap items-center mt-0 pt-2 pb-2 md:pb-1">
                 <div className="w-1/2 pl-2 md:pl-0">
                     <a
                         className="text-gray-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
@@ -18,7 +24,11 @@ function Header() {
                 <div className="w-1/2 pr-0">
                     <div className="flex relative inline-block float-right">
                         <div className="relative text-sm text-gray-100">
-                            <button id="userButton" className="flex items-center focus:outline-none mr-3">
+                            <button
+                                id="userButton"
+                                onClick={handleUserClick}
+                                className="flex items-center focus:outline-none mr-3"
+                            >
                                 <img
                                     className="w-8 h-8 rounded-full mr-4"
                                     src="http://i.pravatar.cc/300"
@@ -38,8 +48,7 @@ function Header() {
                                 </svg>
                             </button>
                             <div
-                                id="userMenu"
-                                className="bg-gray-900 rounded shadow-md mt-2 absolute mt-12 top-0 right-0 min-w-full overflow-auto z-30 invisible"
+                                className={`bg-gray-900 rounded shadow-md mt-2 absolute mt-12 top-0 right-0 min-w-full overflow-auto z-30 ${userMenuCls}`}
                             >
                                 <ul className="list-reset">
                                     <li>
