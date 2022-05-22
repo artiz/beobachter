@@ -1,12 +1,14 @@
 import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { usePerfMetricsState } from "core/metrics/usePerfMetricsState";
+import Button from "components/button/Button";
+import LoadingCircle from "components/state/LoadingCircle";
 
 const Dashboard = () => {
     const [metrics] = usePerfMetricsState();
 
     return (
-        <div className="container w-full lg:pt-20 lg:mt-10 md:pt-16 pt-16">
+        <div className="container w-full">
             <div className="w-full px-4 mt-0 mb-16 text-gray-800 leading-normal">
                 {/* Console Content */}
 
@@ -22,12 +24,18 @@ const Dashboard = () => {
                                 <div className="flex-1 text-right md:text-center">
                                     <h5 className="font-bold uppercase text-gray-400">CPU %</h5>
                                     <h3 className="font-bold text-3xl text-gray-600">
-                                        {metrics?.cpu_perc ?? "N/A"}
-                                        {/* {" "}<span className="text-green-500">
-                                    <i>
-                                        <Icon icon={["fas", "caret-up"]} />
-                                    </i>
-                                </span> */}
+                                        {metrics?.cpu_perc ?? (
+                                            <div className="flex items-center">
+                                                <LoadingCircle height="h-6" width="w-full" />
+                                            </div>
+                                        )}{" "}
+                                        {metrics?.cpu_perc && (
+                                            <span className="text-green-500">
+                                                <i>
+                                                    <Icon icon={["fas", "percent"]} />
+                                                </i>
+                                            </span>
+                                        )}
                                     </h3>
                                 </div>
                             </div>
@@ -46,7 +54,11 @@ const Dashboard = () => {
                                 <div className="flex-1 text-right md:text-center">
                                     <h5 className="font-bold uppercase text-gray-400">VM %</h5>
                                     <h3 className="font-bold text-3xl text-gray-600">
-                                        {metrics?.vm_perc ?? "N/A"}
+                                        {metrics?.vm_perc ?? (
+                                            <div className="flex items-center">
+                                                <LoadingCircle height="h-6" width="w-full" />
+                                            </div>
+                                        )}
                                         {/* {" "}
                                 <span className="text-pink-500">
                                     <i>
@@ -64,15 +76,11 @@ const Dashboard = () => {
                     <div className="w-full md:w-1/2 p-3">
                         <div className="bg-gray-900 border border-gray-800 rounded shadow">
                             <div className="border-b border-gray-800 p-3">
-                                <h5 className="font-bold uppercase text-gray-600">Graph</h5>
+                                <h5 className="font-bold uppercase text-gray-600">Buttons</h5>
                             </div>
                             <div className="p-5">
-                                <canvas
-                                    id="chartjs-7"
-                                    className="chartjs"
-                                    width="undefined"
-                                    height="undefined"
-                                ></canvas>
+                                <Button title="Outlined" />
+                                <Button title="Default" isDefault={true} />
                             </div>
                         </div>
                     </div>

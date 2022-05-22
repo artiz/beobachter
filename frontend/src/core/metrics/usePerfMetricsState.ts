@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import config from "core/config";
 
 export interface IPerfMetrics {
     cpu_perc: number;
@@ -11,7 +12,7 @@ export function usePerfMetricsState(): [IPerfMetrics?, WebSocket?] {
     const websocket = useRef<WebSocket>();
 
     useEffect(() => {
-        const basePath = SERVER_DATA.wsBasePath;
+        const basePath = config.wsBasePath;
         if (websocket.current && websocket.current.readyState !== WebSocket.CLOSED) {
             return;
         }
