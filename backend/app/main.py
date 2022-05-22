@@ -57,7 +57,7 @@ app.include_router(
     tags=["users"],
     dependencies=[Depends(get_current_active_user)],
 )
-app.include_router(auth_router, prefix=settings.API, tags=["auth"])
+app.include_router(auth_router, prefix=settings.API + "/auth", tags=["auth"])
 app.include_router(system_router, prefix=settings.API, tags=["system"])
 
 

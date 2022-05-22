@@ -10,7 +10,7 @@ def test_login(client, test_user, monkeypatch):
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
     response = client.post(
-        "/api/token",
+        "/api/auth/login",
         data={"username": test_user.email, "password": "nottheactualpass"},
     )
     assert response.status_code == 200
@@ -43,9 +43,7 @@ def test_resignup(client, test_user, monkeypatch):
     assert response.status_code == 409
 
 
-def test_wrong_password(
-    client, test_db, test_user, test_password, monkeypatch
-):
+def test_wrong_password(client, test_db, test_user, test_password, monkeypatch):
     def verify_password_failed_mock(first: str, second: str):
         return False
 
@@ -54,13 +52,15 @@ def test_wrong_password(
     )
 
     response = client.post(
-        "/api/token", data={"username": test_user.email, "password": "wrong"}
+        "/api/auth/login",
+        data={"username": test_user.email, "password": "wrong"},
     )
     assert response.status_code == 401
 
 
 def test_wrong_login(client, test_db, test_user, test_password):
     response = client.post(
-        "/api/token", data={"username": "fakeuser", "password": test_password}
+        "/api/auth/login",
+        data={"username": "fakeuser", "password": test_password},
     )
     assert response.status_code == 401

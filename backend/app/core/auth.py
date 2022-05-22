@@ -60,7 +60,7 @@ def authenticate_user(db, email: str, password: str):
     return user
 
 
-def sign_up_new_user(db, email: str, password: str):
+def sign_up_new_user(db, email: str, password: str) -> models.User:
     user = get_user_by_email(db, email)
     if user:
         return False  # User already exists

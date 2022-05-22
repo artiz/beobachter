@@ -3,13 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from datetime import timedelta
 
 from app.db.session import get_db
+from app.db import models
 from app.core import security
 from app.core.auth import authenticate_user, sign_up_new_user
 
 auth_router = r = APIRouter()
 
 
-@r.post("/token")
+@r.post("/login")
 async def login(
     db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
 ):
@@ -24,12 +25,9 @@ async def login(
     access_token_expires = timedelta(
         minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES
     )
-    if user.is_superuser:
-        permissions = "admin"
-    else:
-        permissions = "user"
+
     access_token = security.create_access_token(
-        data={"sub": user.email, "permissions": permissions},
+        data=format_user(user),
         expires_delta=access_token_expires,
     )
 
@@ -51,13 +49,25 @@ async def signup(
     access_token_expires = timedelta(
         minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES
     )
-    if user.is_superuser:
-        permissions = "admin"
-    else:
-        permissions = "user"
+
     access_token = security.create_access_token(
-        data={"sub": user.email, "permissions": permissions},
+        data=format_user(user),
         expires_delta=access_token_expires,
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+def format_user(user: models.User):
+    if user.is_superuser:
+        permissions = "admin"
+    else:
+        permissions = "user"
+
+    return {
+        "sub": user.email,
+        "uid": user.id,
+        "fn": user.first_name,
+        "ln": user.last_name,
+        "permissions": permissions,
+    }
