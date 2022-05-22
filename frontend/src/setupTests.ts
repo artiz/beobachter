@@ -2,4 +2,9 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";
+
+window.SERVER_DATA = {
+    apiBasePath: "http://localhost:8000/api",
+    wsBasePath: "ws://localhost:8000/api",
+};

@@ -14,6 +14,7 @@
         "@types/react": "^18.0.9",
         "@types/react-dom": "^18.0.4",
         "husky": "^8.0.1",
+        "jest-websocket-mock": "^2.3.0",
         "jwt-decode": "^3.1.2",
         "lint-staged": "^12.4.1",
         "luxon": "^2.4.0",

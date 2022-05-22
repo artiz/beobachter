@@ -82,7 +82,7 @@ services:
       - './frontend/node_modules:/app/node_modules:cached'
     environment:
         NODE_ENV: "development"
-        REACT_APP_API_BASE_PATH: "/api"
+        REACT_APP_API_BASE_PATH: "http://localhost:8000/api"
         REACT_APP_MODE: "development"
 
 

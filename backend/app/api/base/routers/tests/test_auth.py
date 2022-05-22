@@ -23,7 +23,7 @@ def test_signup(client, monkeypatch):
     monkeypatch.setattr(security, "get_password_hash", get_password_hash_mock)
 
     response = client.post(
-        "/api/signup",
+        "/api/auth/signup",
         data={"username": "some@email.com", "password": "randompassword"},
     )
     assert response.status_code == 200
@@ -34,7 +34,7 @@ def test_resignup(client, test_user, monkeypatch):
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
     response = client.post(
-        "/api/signup",
+        "/api/auth/signup",
         data={
             "username": test_user.email,
             "password": "password_hashing_is_skipped_via_monkey_patch",
