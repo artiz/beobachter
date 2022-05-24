@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import List, Optional
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
 
 
@@ -23,6 +23,16 @@ class Settings(BaseSettings):
     PERF_DATA_CHANNEL: str = "perf_data_channel"
     PERF_DATA_INTERVAL: float = 2.0
     PERF_DATA_PUBLISH_STEP: int = 1  # multiplier for PERF_DATA_INTERVAL
+
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
+        "http://localhost:8000",
+        "http://192.168.100.29:8000/",
+    ]
+
+    # Origins that match this regex OR are in the above list are allowed
+    BACKEND_CORS_ORIGIN_REGEX: Optional[
+        str
+    ] = "https.*\.beobachter\.herokuapp.com"
 
 
 settings = Settings()

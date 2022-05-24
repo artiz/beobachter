@@ -15,6 +15,7 @@ module.exports = {
     plugins: ["react", "@typescript-eslint"],
     rules: {
         "no-use-before-define": "off",
+        "no-console": "warn",
         "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: true }],
         "react/jsx-filename-extension": ["warn", { extensions: [".tsx"] }],
         "import/extensions": ["off", "ignorePackages"],

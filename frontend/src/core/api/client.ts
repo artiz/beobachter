@@ -7,27 +7,48 @@ interface ApiTokenResponse {
     token_type: string; // "bearer"
 }
 
-const API_TOKEN_KEY = "auth_token";
+export const API_TOKEN_KEY = "auth_token";
 
-export class AuthenticationException extends Error {
-    constructor(public message: string = "Authentication error") {
+export class AuthenticationError extends Error {
+    code: number;
+
+    constructor(public message: string = "Authentication error", code = 0) {
         super(message);
 
         this.name = "AuthenticationException";
-        Error.captureStackTrace(this, AuthenticationException);
+        this.code = code;
+        Error.captureStackTrace(this, AuthenticationError);
+    }
+
+    static fromCode(code: number): AuthenticationError {
+        if (code === 401) {
+            return new AuthenticationError("Invalid credentials", code);
+        } else if (code === 403) {
+            return new AuthenticationError("Not enough permissions", code);
+        } else {
+            return new AuthenticationError("Authentication error", code);
+        }
     }
 }
 
-export class AuthTokenExpiredException extends AuthenticationException {
+export class AuthTokenExpiredError extends AuthenticationError {
     constructor(public message: string = "Authentication token expired") {
         super(message);
 
         this.name = "AuthTokenExpiredException";
-        Error.captureStackTrace(this, AuthTokenExpiredException);
+        Error.captureStackTrace(this, AuthTokenExpiredError);
     }
 }
 
-export type JsonResponse<T = unknown> = { data: T; response: Response };
+export class JsonResponse<T = unknown> extends Response {
+    data: T;
+
+    constructor(d: T) {
+        super();
+
+        this.data = d;
+    }
+}
 
 export class APIClient {
     // ----- Authentication & User Operations
@@ -46,6 +67,7 @@ export class APIClient {
         const response = await this.post<ApiTokenResponse>("/auth/login", form, {});
 
         localStorage.setItem(API_TOKEN_KEY, response.data.access_token);
+        window.postMessage(API_TOKEN_KEY);
         return response;
     }
 
@@ -63,18 +85,25 @@ export class APIClient {
         body?: BodyInit;
         headers?: Record<string, string>;
     }): Promise<JsonResponse<T>> {
-        try {
-            const response = await fetch(config.apiBasePath + url, this.prepareRequest({ method, body, headers }));
-            const data = (await response.json()) as T;
+        const response = await fetch(config.apiBasePath + url, this.prepareRequest({ method, body, headers }));
 
-            return {
-                data,
-                response,
-            };
-        } catch (e) {
-            console.error("REQ ERR", e);
-            throw e;
+        const result = response as JsonResponse<T>;
+        if (response.headers.get("content-type")?.includes("json")) {
+            result.data = (await response.json()) as T;
         }
+
+        if (response.status > 499) {
+            throw new Error(`${response.statusText || "Server error"} ${response.status}`);
+        }
+        if ([401, 403].includes(response.status)) {
+            // TODO: window.postMessage(AUTH_ERROR)
+            throw AuthenticationError.fromCode(response.status);
+        }
+        if (response.status > 399) {
+            throw new Error(`${response.statusText || "Request error"} ${response.status}`);
+        }
+
+        return result;
     }
 
     async get<T = unknown>(url: string, headers: Record<string, string> = {}): Promise<JsonResponse<T>> {
@@ -119,7 +148,7 @@ export class APIClient {
                 if (isTokenValid) {
                     request.headers["Authorization"] = `bearer ${authToken}`;
                 } else {
-                    throw new AuthTokenExpiredException("Login session has expired");
+                    throw new AuthTokenExpiredError("Login session has expired");
                 }
             }
         }

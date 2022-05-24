@@ -1,13 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import LoadingCircle from "components/state/LoadingCircle";
+import { ThailwindColor } from "ui/thailwind";
 
 interface ButtonProps {
     title?: string;
+    color?: ThailwindColor;
     loading?: boolean;
     groupCls?: string;
     isDefault?: boolean;
     disabled?: boolean;
     fullWidth?: boolean;
+    inline?: boolean;
+    useRouter?: boolean;
     type?: "submit" | "reset" | "button";
     href?: string; // render as link
     children?: React.ReactNode;
@@ -17,32 +22,49 @@ interface ButtonProps {
 function Button({
     loading = false,
     title,
+    color = "emerald",
     disabled: disabled = false,
     isDefault = false,
     fullWidth = false,
+    useRouter = false,
+    inline = false,
     type = "button",
     children,
     href,
     onClick,
 }: ButtonProps) {
     const theming = isDefault
-        ? "bg-teal-600 border-teal-700 hover:border-teal-600 hover:bg-teal-500 active:bg-teal-700 text-white"
-        : "bg-transparent hover:bg-teal-500 text-teal-500 hover:text-white border border-teal-500 hover:border-transparent active:bg-teal-700";
+        ? `bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-white`
+        : `bg-transparent hover:bg-${color}-500 text-${color}-500 hover:text-white border border-${color}-500 hover:border-transparent active:bg-${color}-700`;
 
     const content = children ?? title;
     const buttonCls =
-        "justify-center cursor-pointer font-sembold py-2 px-4 mb-4 mr-4 rounded " +
+        "justify-center cursor-pointer font-sembold py-2 px-4 rounded transition ease-in-out delay-150 " +
         theming +
+        (inline ? " m-2 " : " mb-4 mr-4 ") +
         (fullWidth ? " w-full " : " min-w-[6rem] ") +
         (disabled ? " opacity-50 cursor-not-allowed " : "");
 
-    return href ? (
-        <a className={buttonCls} href={href} onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}>
-            {content}
-        </a>
-    ) : (
-        <button className={buttonCls} type={type} onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}>
-            {loading && <LoadingCircle color={isDefault ? "text-white" : "text-teal-700"} />}
+    if (href) {
+        return useRouter ? (
+            <Link className={buttonCls} to={href} onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}>
+                {content}
+            </Link>
+        ) : (
+            <a className={buttonCls} href={href} onClick={onClick as React.MouseEventHandler<HTMLAnchorElement>}>
+                {content}
+            </a>
+        );
+    }
+
+    return (
+        <button
+            className={buttonCls}
+            disabled={disabled || loading}
+            type={type}
+            onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
+        >
+            {loading && <LoadingCircle color={isDefault ? "text-white" : `text-${color}-700`} />}
             {content}
         </button>
     );

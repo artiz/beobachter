@@ -30,16 +30,19 @@ class PerfMetricsLoader:
         """Calc sparsed expiration to store time series in Redis"""
         # TODO: move to helper
 
-        min15 = 900
+        min15 = 900  # sec
         hour = 3600
         day = hour * 24
+        week = day * 7
         month = day * 30
 
-        exp = min15  # sec
+        exp = min15
 
         if period % min15 == 0:
             exp = 3600 * 24
         elif period % 3600 == 0:
+            exp = week
+        elif period % (3600 * 4) == 0:
             exp = month
         elif period % day == 0:
             exp = month * 12

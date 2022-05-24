@@ -19,7 +19,10 @@ const Error = () => {
                     <p className="mb-8 text-center text-gray-500 md:text-lg">
                         The page you’re looking for doesn’t exist.
                     </p>
-                    <Button href="/">Go Home</Button>
+
+                    <Button href="/" useRouter={true}>
+                        Go Home
+                    </Button>
                 </div>
             </div>
         </div>

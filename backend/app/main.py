@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, WebSocket
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 import uvicorn
 import asyncio
@@ -18,6 +19,17 @@ app = FastAPI(
     redoc_url=f"{settings.API}/redoc",
     openapi_url=f"{settings.API}/openapi",
 )
+
+# Set all CORS enabled origins
+if settings.BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
+        allow_origin_regex=settings.BACKEND_CORS_ORIGIN_REGEX,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 @app.on_event("startup")

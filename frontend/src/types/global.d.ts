@@ -3,6 +3,7 @@
 class ServerData {
     apiBasePath: string;
     wsBasePath: string;
+    publicUrl: string;
 }
 
 declare global {

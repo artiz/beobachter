@@ -15,9 +15,9 @@ class ConnectionManager:
         await websocket.accept()
         self.active_connections.append(websocket)
 
-    def disconnect(self, websocket: WebSocket):
+    async def disconnect(self, websocket: WebSocket):
         try:
-            websocket.close()
+            await websocket.close()
         except:
             ...
 
@@ -64,9 +64,8 @@ class RedisBroadcaster(ConnectionManager):
                 await self.broadcast(text)
             await asyncio.sleep(0.5)
 
+        self.ps.unsubscribe()
+        self.r.close()
+
     async def stop(self):
         super().stop()
-        if self.ps:
-            self.ps.unsubscribe()
-        if self.r:
-            self.r.close()
