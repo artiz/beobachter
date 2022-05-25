@@ -29,18 +29,18 @@ function Header() {
                                 <span>&nbsp;</span>
                             ) : (
                                 <>
-                                    <a
-                                        href={config.getPublicUrl("/login")}
+                                    <Link
+                                        to={"/login"}
                                         className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
                                     >
                                         Login
-                                    </a>
-                                    <a
-                                        href={config.getPublicUrl("/signup")}
+                                    </Link>
+                                    <Link
+                                        to={"/signup"}
                                         className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
                                     >
                                         Signup
-                                    </a>
+                                    </Link>
                                 </>
                             )}
                         </div>
@@ -54,15 +54,15 @@ function Header() {
                             {user && (
                                 <>
                                     <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/")}
+                                        <Link
+                                            to={"/"}
                                             className="block py-1 md:py-3 pl-1 align-middle text-blue-400 no-underline hover:text-gray-100 border-b-2 border-blue-400 hover:border-blue-400"
                                         >
                                             <i className="mr-3 text-blue-400">
                                                 <Icon icon={["fas", "home"]} />
                                             </i>
                                             <span className="pb-1 md:pb-0 text-sm">Dashboard</span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mr-6 my-2 md:my-0">
                                         <a

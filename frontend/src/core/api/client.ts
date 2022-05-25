@@ -66,8 +66,10 @@ export class APIClient {
 
         const response = await this.post<ApiTokenResponse>("/auth/login", form, {});
 
-        localStorage.setItem(API_TOKEN_KEY, response.data.access_token);
-        window.postMessage(API_TOKEN_KEY);
+        if (response.data?.access_token) {
+            localStorage.setItem(API_TOKEN_KEY, response.data?.access_token);
+            window.postMessage(API_TOKEN_KEY);
+        }
         return response;
     }
 
