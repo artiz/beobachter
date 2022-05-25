@@ -139,6 +139,8 @@ export class APIClient {
             method,
             headers,
             body,
+            credentials: "include" as RequestCredentials,
+            mode: "cors" as RequestMode,
         };
 
         if (authToken) {

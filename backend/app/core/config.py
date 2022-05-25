@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = [
         "http://localhost:8000",
-        "http://192.168.100.29:8000/",
+        "http://192.168.100.29:8000",
     ]
 
     # Origins that match this regex OR are in the above list are allowed

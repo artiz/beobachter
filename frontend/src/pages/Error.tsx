@@ -10,7 +10,7 @@ const Error = () => {
             justify-center
           "
         >
-            <div className="px-40 py-5 mb-10 mt-5 bg-gray-700 rounded-md shadow-xl">
+            <div className="w-full lg:w-1/2 px-10 py-5 mb-10 mt-5 bg-gray-700 rounded-md shadow-xl">
                 <div className="flex flex-col items-center">
                     <h1 className="font-bold text-amber-300 text-9xl">404</h1>
                     <h6 className="mb-2 text-2xl font-bold text-center text-gray-800 md:text-3xl">

@@ -20,7 +20,6 @@
         <script>
             window.SERVER_DATA = window.__SERVER_DATA__ || {};
             SERVER_DATA.apiBasePath ||= "%REACT_APP_API_BASE_PATH%";
-            SERVER_DATA.wsBasePath = window.SERVER_DATA.apiBasePath.replace(/https?:/, "ws:");
             SERVER_DATA.publicUrl = "%PUBLIC_URL%";
         </script>
     </head>
