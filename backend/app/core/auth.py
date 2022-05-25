@@ -1,6 +1,7 @@
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header, Query
 from jwt import PyJWTError
+from fastapi.security.utils import get_authorization_scheme_param
 
 from app.db import session, models
 from app.db.crud import get_user_by_email, create_user
@@ -8,9 +9,30 @@ from app.core import security
 from app.core.schemas import schemas
 
 
+async def auth_bearer_token(authorization: str = Header(default="")):
+    scheme, param = get_authorization_scheme_param(authorization)
+
+    if not authorization or scheme.lower() != "bearer":
+        return ""
+    return param
+
+
+async def ws_protocol(sec_websocket_protocol: str = Header(default="")):
+    return sec_websocket_protocol
+
+
+async def query_token(token: str = Query(default="")):
+    return token
+
+
 async def get_current_user(
-    db=Depends(session.get_db), token: str = Depends(security.oauth2_scheme)
+    db=Depends(session.get_db),
+    token: str = Depends(auth_bearer_token),
+    token_ws: str = Depends(query_token),
 ):
+    if not token:
+        token = token_ws
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -23,11 +45,10 @@ async def get_current_user(
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        permissions: str = payload.get("permissions")
-        token_data = schemas.TokenData(email=email, permissions=permissions)
     except PyJWTError:
         raise credentials_exception
-    user = get_user_by_email(db, token_data.email)
+
+    user = get_user_by_email(db, email)
     if user is None:
         raise credentials_exception
     return user

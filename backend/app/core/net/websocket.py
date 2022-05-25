@@ -30,7 +30,7 @@ class ConnectionManager:
         try:
             await websocket.send_text(message)
         except ConnectionClosed:
-            self.disconnect(websocket)
+            await self.disconnect(websocket)
 
     async def broadcast(self, message: str):
         for connection in self.active_connections:

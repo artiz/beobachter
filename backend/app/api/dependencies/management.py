@@ -1,16 +1,16 @@
 from email.mime import base
-import redis
+import aioredis
 
 from app.core.config import settings
 from app.core.global_app import get_system_metrics_broadcaster
 
 # Dependency
-def get_redis():
-    r = redis.Redis.from_url(settings.REDIS_URI)
+async def get_redis():
+    r = await aioredis.from_url(settings.REDIS_URI)
     try:
         yield r
     finally:
-        r.close()
+        await r.close()
 
 
 def get_system_metrics_manager():
