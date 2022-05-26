@@ -1,8 +1,8 @@
-from fastapi import APIRouter, WebSocket, Depends, status
+from fastapi import APIRouter, WebSocket, Depends, status, Response
 from typing import List
 import asyncio
 
-from app.core.auth import get_current_active_user
+from app.core.auth import check_current_active_user, get_current_active_user
 from app.core.config import settings
 from app.core.net.websocket import ConnectionManager
 from app.core.schemas.metrics import PerfMetrics
@@ -18,7 +18,7 @@ system_router = r = APIRouter()
 async def ws_system_metrics(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_system_metrics_manager),
-    current_user=Depends(get_current_active_user),
+    current_user=Depends(check_current_active_user),
 ):
     """
     Websocket channel with system performance data updates
@@ -47,6 +47,17 @@ async def system_metrics(
     """
     Get with system performance data
     """
-    points = await redis.keys(settings.PERF_DATA_PREFIX + "*")
+    batch, cr = 100, 0
+    m = settings.PERF_DATA_KEY + "*"
 
-    return sorted(points)
+    (cr, keys) = await redis.scan(cursor=cr, match=m, count=batch)
+    result = await redis.mget(keys)
+    while cr:
+        (cr, keys) = await redis.scan(cursor=cr, match=m, count=batch)
+        points = await redis.mget(keys)
+        result.extend(points)
+
+    print(result[0])
+
+    content = "[" + ",".join(result) + "]"
+    return Response(content, media_type="application/json")

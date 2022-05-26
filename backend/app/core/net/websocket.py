@@ -51,7 +51,9 @@ class RedisBroadcaster(ConnectionManager):
         self.channel = channel
 
     async def run(self):
-        self.r = redis.Redis.from_url(self.redis_url)
+        self.r = redis.Redis.from_url(
+            self.redis_url, charset="utf-8", decode_responses=True
+        )
         self.ps = self.r.pubsub()
         self.ps.subscribe([self.channel])
 
@@ -60,8 +62,8 @@ class RedisBroadcaster(ConnectionManager):
                 break
             msg = self.ps.get_message()
             if msg and msg["type"] == "message":
-                text = msg["data"].decode("utf-8")
-                await self.broadcast(text)
+                # text = msg["data"].decode("utf-8")
+                await self.broadcast(msg["data"])
             await asyncio.sleep(0.5)
 
         self.ps.unsubscribe()

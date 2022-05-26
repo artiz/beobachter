@@ -11,7 +11,7 @@ services:
       - frontend
 
   redis:
-    image: redis
+    image: redislabs/redistimeseries
     ports:
       - 6379:6379
     volumes:

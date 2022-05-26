@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     CELERY_BROKER: str = "redis://redis:6379/0"
     REDIS_URI: str = "redis://redis:6379/0"
 
-    PERF_DATA_PREFIX: str = "perf_data_"
+    PERF_DATA_KEY: str = "perf_data_"
     PERF_DATA_CHANNEL: str = "perf_data_channel"
     PERF_DATA_INTERVAL: float = 2.0
     PERF_DATA_PUBLISH_STEP: int = 1  # multiplier for PERF_DATA_INTERVAL

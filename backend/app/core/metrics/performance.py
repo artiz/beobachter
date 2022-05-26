@@ -18,7 +18,9 @@ class PerfMetricsLoader:
 
         offset = m.ts - self.start
         exp = self.get_sparse_expiration(offset)
-        self.r.set(settings.PERF_DATA_PREFIX + str(m.ts), js, ex=exp)
+        # TODO: replace with time series
+        # https://github.com/aio-libs/aioredis-py/issues/1238
+        self.r.set(settings.PERF_DATA_KEY + str(m.ts), js, ex=exp)
 
         if offset % settings.PERF_DATA_PUBLISH_STEP == 0:
             self.r.publish(settings.PERF_DATA_CHANNEL, js)
