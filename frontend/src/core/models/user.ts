@@ -1,3 +1,5 @@
+import * as gravatar from "gravatar";
+
 export interface JwtUser {
     sub: string; // user.email,
     uid: string; // id,
@@ -13,19 +15,23 @@ export class User {
     email: string;
     firstName?: string;
     lastName?: string;
+    avatarUrl?: string;
     permissions: string[] = [];
 
     constructor(email: string) {
         this.email = email;
     }
-
     static fromJwt(jwt: JwtUser): User {
+        // admin@fastapi-react-project.com
+        const avatar = jwt.sub ? gravatar.url(jwt.sub, { s: "128" }) : undefined;
+
         return {
             email: jwt.sub,
             id: jwt.uid,
             firstName: jwt.fn,
             lastName: jwt.ln,
             permissions: (jwt.permissions || "").split(PERMISSIONS_SEPARATOR),
-        };
+            avatarUrl: avatar,
+        } as User;
     }
 }

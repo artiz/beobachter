@@ -39,7 +39,7 @@ function Button({
 
     const content = children ?? title;
     const buttonCls =
-        "justify-center cursor-pointer font-sembold py-2 px-4 rounded transition ease-in-out delay-150 " +
+        "justify-center cursor-pointer font-sembold py-2 px-4 rounded transition ease-in-out delay-10 " +
         theming +
         (inline ? " m-2 " : " mb-4 mr-4 ") +
         (fullWidth ? " w-full " : " min-w-[6rem] ") +

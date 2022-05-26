@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { API_TOKEN_KEY } from "core/api/client";
+import { API_TOKEN } from "core/api/client";
 import { User, JwtUser } from "core/models/user";
 import jwtDecode from "jwt-decode";
 
@@ -8,13 +8,16 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
     const [loading, setLoading] = useState<boolean>(true);
 
     const loadToken = () => {
-        const token = localStorage.getItem(API_TOKEN_KEY);
+        const token = localStorage.getItem(API_TOKEN);
         if (token) {
             try {
                 const jwtUser = jwtDecode<JwtUser>(token);
-                setUser(User.fromJwt(jwtUser));
+                const user = User.fromJwt(jwtUser);
+                setUser(user);
+
+                // avatarUrl
             } catch (e) {
-                // TODO:
+                // TODO: P1 - handle token error
                 // const notifier = useAppNotifier();
                 // notifier.error(e);
                 setUser(undefined);
@@ -26,20 +29,20 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleStorageUpdate = (ev: StorageEvent): any => {
-        if (ev.key === API_TOKEN_KEY) {
+        if (ev.key === API_TOKEN) {
             loadToken();
         }
     };
     const handleMessage = (ev: MessageEvent) => {
-        if (ev.data === API_TOKEN_KEY) {
+        if (ev.data === API_TOKEN) {
             loadToken();
         }
     };
 
     const doLogout = useCallback(() => {
-        localStorage.removeItem(API_TOKEN_KEY);
+        localStorage.removeItem(API_TOKEN);
         setUser(undefined);
-        window.postMessage(API_TOKEN_KEY);
+        window.postMessage(API_TOKEN);
     }, []);
 
     useEffect(() => {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import config from "core/config";
-import { API_TOKEN_KEY } from "core/api/client";
+import { API_TOKEN } from "core/api/client";
 
 export interface IPerfMetrics {
     cpu_perc: number;
@@ -17,12 +17,15 @@ export function usePerfMetricsState(): [IPerfMetrics?, WebSocket?] {
             return;
         }
 
-        const token = localStorage.getItem(API_TOKEN_KEY) ?? "";
+        const token = localStorage.getItem(API_TOKEN) ?? "";
         const ws = new WebSocket(`${config.wsBasePath}/ws_system_metrics?token=${encodeURIComponent(token)}`);
         websocket.current = ws;
 
         ws.onmessage = (event) => {
-            setMetrics(JSON.parse(event.data));
+            const msg = JSON.parse(event.data);
+            if (msg.type === "metrics") {
+                setMetrics(msg.data);
+            }
         };
 
         // ws.onopen = () => {

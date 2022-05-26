@@ -27,8 +27,8 @@ function App() {
                 <Header />
                 <div className="flex-grow container w-full mx-auto">
                     <Routes>
-                        <Route path="/" element={<AuthRoute cmp={<Dashboard />} />} />
-                        <Route path="/dashboard" element={<AuthRoute cmp={<Dashboard />} />} />
+                        <Route path="/" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
+                        <Route path="/dashboard" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
 
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/login" element={<Login />} />

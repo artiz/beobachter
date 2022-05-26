@@ -24,7 +24,17 @@ function Header() {
                     <div className="w-1/2 pr-0">
                         <div className="text-sm flex relative inline-block float-right">
                             {user ? (
-                                <UserMenu />
+                                <>
+                                    <UserMenu />
+                                    <div className="block lg:hidden pr-4">
+                                        <button
+                                            id="nav-toggle"
+                                            className="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-100 hover:border-teal-500 appearance-none focus:outline-none"
+                                        >
+                                            <Icon icon={["fas", "bars"]} />
+                                        </button>
+                                    </div>
+                                </>
                             ) : userLoading ? (
                                 <span>&nbsp;</span>
                             ) : (
@@ -56,7 +66,7 @@ function Header() {
                                     <li className="mr-6 my-2 md:my-0">
                                         <Link
                                             to={"/"}
-                                            className="block py-1 md:py-3 pl-1 align-middle text-blue-400 no-underline hover:text-gray-100 border-b-2 border-blue-400 hover:border-blue-400"
+                                            className="block py-1 md:py-2 pl-1 align-middle text-blue-400 no-underline hover:text-gray-100 border-b-2 border-blue-400 hover:border-blue-400"
                                         >
                                             <i className="mr-3 text-blue-400">
                                                 <Icon icon={["fas", "home"]} />
@@ -64,10 +74,23 @@ function Header() {
                                             <span className="pb-1 md:pb-0 text-sm">Dashboard</span>
                                         </Link>
                                     </li>
+
+                                    <li className="mr-6 my-2 md:my-0">
+                                        <a
+                                            href={config.getPublicUrl("/monitoring")}
+                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-green-400"
+                                        >
+                                            <i className="mr-3">
+                                                <Icon icon={["fas", "chart-area"]} />
+                                            </i>
+                                            <span className="pb-1 md:pb-0 text-sm">Monitoring</span>
+                                        </a>
+                                    </li>
+
                                     <li className="mr-6 my-2 md:my-0">
                                         <a
                                             href={config.getPublicUrl("/tasks")}
-                                            className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-pink-400"
+                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-pink-400"
                                         >
                                             <i className="mr-3">
                                                 <Icon icon={["fas", "tasks"]} />
@@ -78,34 +101,12 @@ function Header() {
                                     <li className="mr-6 my-2 md:my-0">
                                         <a
                                             href={config.getPublicUrl("/messages")}
-                                            className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-purple-400"
+                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-purple-400"
                                         >
                                             <i className="mr-3">
                                                 <Icon icon={["fas", "envelope"]} />
                                             </i>
                                             <span className="pb-1 md:pb-0 text-sm">Messages</span>
-                                        </a>
-                                    </li>
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/reports")}
-                                            className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-green-400"
-                                        >
-                                            <i className="mr-3">
-                                                <Icon icon={["fas", "chart-area"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Reports</span>
-                                        </a>
-                                    </li>
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/payments")}
-                                            className="block py-1 md:py-3 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-red-400"
-                                        >
-                                            <i className="mr-3">
-                                                <Icon icon={["fas", "wallet"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Payments</span>
                                         </a>
                                     </li>
                                 </>

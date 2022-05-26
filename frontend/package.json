@@ -13,6 +13,7 @@
         "@types/node": "^16.11.36",
         "@types/react": "^18.0.9",
         "@types/react-dom": "^18.0.4",
+        "gravatar": "^1.8.2",
         "husky": "^8.0.1",
         "jest-websocket-mock": "^2.3.0",
         "jwt-decode": "^3.1.2",
@@ -27,6 +28,7 @@
         "web-vitals": "^2.1.4"
     },
     "devDependencies": {
+        "@types/gravatar": "^1.8.3",
         "@typescript-eslint/eslint-plugin": "^5.24.0",
         "@typescript-eslint/parser": "^5.24.0",
         "autoprefixer": "^10.4.7",

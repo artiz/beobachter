@@ -7,7 +7,7 @@ interface ApiTokenResponse {
     token_type: string; // "bearer"
 }
 
-export const API_TOKEN_KEY = "auth_token";
+export const API_TOKEN = "auth_token";
 
 export class AuthenticationError extends Error {
     code: number;
@@ -55,7 +55,7 @@ export class APIClient {
 
     // Authenticate the user with the backend services.
     async login(username: string, password: string) {
-        localStorage.removeItem(API_TOKEN_KEY);
+        localStorage.removeItem(API_TOKEN);
 
         // Emulate login form
         const form = new FormData();
@@ -67,8 +67,8 @@ export class APIClient {
         const response = await this.post<ApiTokenResponse>("/auth/login", form, {});
 
         if (response.data?.access_token) {
-            localStorage.setItem(API_TOKEN_KEY, response.data?.access_token);
-            window.postMessage(API_TOKEN_KEY);
+            localStorage.setItem(API_TOKEN, response.data?.access_token);
+            window.postMessage(API_TOKEN);
         }
         return response;
     }
@@ -126,7 +126,7 @@ export class APIClient {
         body,
         headers = {},
     }: { method?: string; json?: boolean; body?: BodyInit; headers?: Record<string, string> } = {}): RequestInit {
-        const authToken = localStorage.getItem(API_TOKEN_KEY);
+        const authToken = localStorage.getItem(API_TOKEN);
 
         if (json) {
             // support form, multipart request
