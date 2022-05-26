@@ -34,7 +34,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 @app.on_event("startup")
 async def app_startup():
-    asyncio.create_task(global_app.startup())
+    asyncio.ensure_future(global_app.startup())
 
 
 @app.on_event("shutdown")

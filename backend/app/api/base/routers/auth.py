@@ -43,7 +43,6 @@ async def signup(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Account already exists",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     access_token_expires = timedelta(
@@ -55,7 +54,7 @@ async def signup(
         expires_delta=access_token_expires,
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"user": user, "access_token": access_token, "token_type": "bearer"}
 
 
 def format_user(user: models.User):
