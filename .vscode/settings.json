@@ -8,5 +8,11 @@
     "[postcss]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "[xml]": {
+        "editor.defaultFormatter": "mikeburgh.xml-format"
+    },
+    "[svg]": {
+        "editor.defaultFormatter": "jock.svg"
+    }
 }

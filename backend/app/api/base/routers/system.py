@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, Depends, status, Response
+from fastapi import APIRouter, WebSocket, Depends, Response
 from typing import List
 import asyncio
 
@@ -24,7 +24,7 @@ async def ws_system_metrics(
     Websocket channel with system performance data updates
     """
     if not current_user:
-        return await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return await manager.process_auth_error(websocket)
 
     await manager.connect(websocket)
     try:

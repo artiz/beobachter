@@ -32,13 +32,18 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 
+startup_task = None
+
+
 @app.on_event("startup")
 async def app_startup():
-    asyncio.ensure_future(global_app.startup())
+    global startup_task
+    startup_task = asyncio.ensure_future(global_app.startup())
 
 
 @app.on_event("shutdown")
 async def app_shutdown():
+    startup_task.cancel()
     asyncio.create_task(global_app.shutdown())
 
 

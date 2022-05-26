@@ -1,6 +1,6 @@
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, status
 from websockets.exceptions import ConnectionClosed
-from typing import List, Set
+from typing import List, Optional, Set
 
 import redis
 import asyncio
@@ -14,6 +14,11 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
+
+    async def process_auth_error(self, websocket: WebSocket):
+        await websocket.send_text('{"type": "auth_error"}')
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        self.active_connections.remove(websocket)
 
     async def disconnect(self, websocket: WebSocket):
         try:
@@ -45,10 +50,11 @@ class RedisBroadcaster(ConnectionManager):
     r: redis.Redis
     ps: redis.client.PubSub
 
-    def __init__(self, redis_url: str, channel: str):
+    def __init__(self, redis_url: str, channel: str, type: str = None):
         super().__init__()
         self.redis_url = redis_url
         self.channel = channel
+        self.type = type or channel
 
     async def run(self):
         self.r = redis.Redis.from_url(
@@ -62,8 +68,8 @@ class RedisBroadcaster(ConnectionManager):
                 break
             msg = self.ps.get_message()
             if msg and msg["type"] == "message":
-                # text = msg["data"].decode("utf-8")
-                await self.broadcast(msg["data"])
+                data = f'{{"type":"{self.type}", "data": {msg["data"]} }}'
+                await self.broadcast(data)
             await asyncio.sleep(0.5)
 
         self.ps.unsubscribe()
