@@ -5,7 +5,7 @@ import Button from "components/button/Button";
 import LoadingCircle from "components/state/LoadingCircle";
 
 const Dashboard = () => {
-    const [metrics] = usePerfMetricsState();
+    const [metrics, metricsLoading] = usePerfMetricsState();
 
     return (
         <div className="w-full flex flex-wrap flex-grow">
@@ -23,12 +23,13 @@ const Dashboard = () => {
                             <div className="flex-1 text-right md:text-center">
                                 <h5 className="font-bold uppercase text-gray-400">CPU %</h5>
                                 <h3 className="font-bold text-3xl text-gray-600">
-                                    {metrics?.cpu_perc ?? (
+                                    {metricsLoading ? (
                                         <div className="flex items-center">
                                             <LoadingCircle height="h-6" width="w-full" />
                                         </div>
-                                    )}{" "}
-                                    {/* <span className="text-green-500"><Icon icon={["fas", "percent"]} /></span> */}
+                                    ) : (
+                                        metrics?.cpu_perc ?? "N/A"
+                                    )}
                                 </h3>
                             </div>
                         </div>
@@ -45,10 +46,12 @@ const Dashboard = () => {
                             <div className="flex-1 text-right md:text-center">
                                 <h5 className="font-bold uppercase text-gray-400">VM %</h5>
                                 <h3 className="font-bold text-3xl text-gray-600">
-                                    {metrics?.vm_perc ?? (
+                                    {metricsLoading ? (
                                         <div className="flex items-center">
                                             <LoadingCircle height="h-6" width="w-full" />
                                         </div>
+                                    ) : (
+                                        metrics?.vm_perc ?? "N/A"
                                     )}
                                     {/* {" "}<span className="text-pink-500"><Icon icon={["fas", "exchange-alt"]} /> </span> */}
                                 </h3>
@@ -61,6 +64,7 @@ const Dashboard = () => {
                         <div className="border-b border-gray-800 p-3">
                             <h5 className="font-bold uppercase text-gray-600">Graph</h5>
                         </div>
+
                         <div className="p-5">
                             <canvas id="chartjs-0" className="chartjs" width="undefined" height="undefined"></canvas>
                         </div>

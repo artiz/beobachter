@@ -8,14 +8,18 @@ export interface IPerfMetrics {
     ts: number;
 }
 
-export function usePerfMetricsState(): [IPerfMetrics?, WebSocket?] {
+export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
     const [metrics, setMetrics] = useState<IPerfMetrics>();
+    const [loading, setLoading] = useState<boolean>(false);
+
     const websocket = useRef<WebSocket>();
 
     useEffect(() => {
         if (websocket.current && websocket.current.readyState !== WebSocket.CLOSED) {
             return;
         }
+
+        setLoading(true);
 
         const token = localStorage.getItem(API_TOKEN) ?? "";
         const ws = new WebSocket(`${config.wsBasePath}/ws_system_metrics?token=${encodeURIComponent(token)}`);
@@ -25,17 +29,24 @@ export function usePerfMetricsState(): [IPerfMetrics?, WebSocket?] {
             const msg = JSON.parse(event.data);
             if (msg.type === "metrics") {
                 setMetrics(msg.data);
+            } else if (msg.type === "auth_error") {
+                // TODO: window.postMessage(AUTH_ERROR)
             }
         };
 
-        // ws.onopen = () => {
-        //     ws.send("init");
-        // };
+        ws.onclose = () => {
+            setLoading(false);
+        };
+
+        ws.onopen = () => {
+            setLoading(false);
+            //ws.send("init");
+        };
 
         return () => {
             // ws.close();
         };
     }, []);
 
-    return [metrics, websocket.current];
+    return [metrics, loading];
 }

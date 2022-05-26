@@ -29,7 +29,6 @@ function App() {
                     <Routes>
                         <Route path="/" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
                         <Route path="/dashboard" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
-
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="*" element={<Error />} />

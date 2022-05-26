@@ -5,6 +5,7 @@ import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import config from "core/config";
 import { useAuthStatus } from "core/hooks/useAuthStatus";
 import UserMenu from "./UserMenu";
+import HeaderLink from "./HeaderLink";
 
 function Header() {
     const [user, userLoading] = useAuthStatus();
@@ -63,52 +64,10 @@ function Header() {
                         <ul className="list-reset lg:flex flex-1 items-center px-4 md:px-0">
                             {user && (
                                 <>
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <Link
-                                            to={"/"}
-                                            className="block py-1 md:py-2 pl-1 align-middle text-blue-400 no-underline hover:text-gray-100 border-b-2 border-blue-400 hover:border-blue-400"
-                                        >
-                                            <i className="mr-3 text-blue-400">
-                                                <Icon icon={["fas", "home"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Dashboard</span>
-                                        </Link>
-                                    </li>
-
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/monitoring")}
-                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-green-400"
-                                        >
-                                            <i className="mr-3">
-                                                <Icon icon={["fas", "chart-area"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Monitoring</span>
-                                        </a>
-                                    </li>
-
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/tasks")}
-                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-pink-400"
-                                        >
-                                            <i className="mr-3">
-                                                <Icon icon={["fas", "tasks"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Tasks</span>
-                                        </a>
-                                    </li>
-                                    <li className="mr-6 my-2 md:my-0">
-                                        <a
-                                            href={config.getPublicUrl("/messages")}
-                                            className="block py-1 md:py-2 pl-1 align-middle text-gray-500 no-underline hover:text-gray-100 border-b-2 border-gray-900  hover:border-purple-400"
-                                        >
-                                            <i className="mr-3">
-                                                <Icon icon={["fas", "envelope"]} />
-                                            </i>
-                                            <span className="pb-1 md:pb-0 text-sm">Messages</span>
-                                        </a>
-                                    </li>
+                                    <HeaderLink path="/dashboard" title="Dashboard" color="blue" icon="home" />
+                                    <HeaderLink path="/monitoring" title="Monitoring" color="green" icon="chart-area" />
+                                    <HeaderLink path="/tasks" title="Tasks" color="pink" icon="tasks" />
+                                    <HeaderLink path="/messages" title="Messages" color="purple" icon="envelope" />
                                 </>
                             )}
                         </ul>
