@@ -2,7 +2,7 @@ from email.mime import base
 import aioredis
 
 from app.core.config import settings
-from app.core.global_app import get_system_metrics_broadcaster
+from app.core.global_app import system_metrics_broadcaster
 
 # Dependency
 async def get_redis():
@@ -14,4 +14,4 @@ async def get_redis():
 
 
 def get_system_metrics_manager():
-    return get_system_metrics_broadcaster()
+    return system_metrics_broadcaster

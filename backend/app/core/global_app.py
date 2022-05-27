@@ -8,13 +8,9 @@ system_metrics_broadcaster = RedisBroadcaster(
 )
 
 
-async def shutdown():
-    await system_metrics_broadcaster.stop()
-
-
 async def startup():
     await system_metrics_broadcaster.run()
 
 
-def get_system_metrics_broadcaster():
-    return system_metrics_broadcaster
+async def shutdown():
+    await system_metrics_broadcaster.stop()

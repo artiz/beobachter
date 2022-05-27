@@ -12,11 +12,11 @@ function Header() {
 
     return (
         <>
-            <nav id="header" className="bg-gray-900 fixed w-full z-10 top-0 shadow">
+            <nav id="header" className="bg-zinc-900 fixed w-full z-10 top-0 shadow">
                 <div className="w-full container mx-auto flex flex-wrap items-center mt-0 py-2 px-2 md:pb-1">
                     <div className="w-1/2 pl-2 md:pl-0">
                         <Link
-                            className="text-gray-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
+                            className="text-zinc-100 text-base xl:text-xl no-underline hover:no-underline font-bold"
                             to="/"
                         >
                             {config.appName}
@@ -30,7 +30,7 @@ function Header() {
                                     <div className="block lg:hidden pr-4">
                                         <button
                                             id="nav-toggle"
-                                            className="flex items-center px-3 py-2 border rounded text-gray-500 border-gray-600 hover:text-gray-100 hover:border-teal-500 appearance-none focus:outline-none"
+                                            className="flex items-center px-3 py-2 border rounded text-zinc-500 border-zinc-600 hover:text-zinc-100 hover:border-teal-500 appearance-none focus:outline-none"
                                         >
                                             <Icon icon={["fas", "bars"]} />
                                         </button>
@@ -42,13 +42,13 @@ function Header() {
                                 <>
                                     <Link
                                         to={"/login"}
-                                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
                                     >
                                         Login
                                     </Link>
                                     <Link
                                         to={"/signup"}
-                                        className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
                                     >
                                         Signup
                                     </Link>
@@ -58,7 +58,7 @@ function Header() {
                     </div>
 
                     <div
-                        className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-gray-900 z-20"
+                        className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-zinc-900 z-20"
                         id="nav-content"
                     >
                         <ul className="list-reset lg:flex flex-1 items-center px-4 md:px-0">
@@ -76,11 +76,11 @@ function Header() {
                             <input
                                 type="search"
                                 placeholder="Search"
-                                className="w-full bg-gray-900 text-sm text-gray-400 transition border border-gray-800 focus:outline-none focus:border-gray-600 rounded py-1 px-2 pl-10 appearance-none leading-normal"
+                                className="w-full bg-zinc-900 text-sm text-zinc-400 transition border border-zinc-800 focus:outline-none focus:border-zinc-600 rounded py-1 px-2 pl-10 appearance-none leading-normal"
                             />
                             <div className="absolute search-icon" style={{ top: "0.375rem", left: "1.75rem" }}>
                                 <svg
-                                    className="fill-current pointer-events-none text-gray-500 w-4 h-4"
+                                    className="fill-current pointer-events-none text-zinc-500 w-4 h-4"
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                 >
@@ -91,7 +91,7 @@ function Header() {
                     </div>
                 </div>
             </nav>
-            <div className="lg:pt-20 lg:mt-10 md:pt-16 pt-16"></div>
+            <div className="lg:pt-20 lg:mt-4 md:pt-16 pt-16"></div>
         </>
     );
 }

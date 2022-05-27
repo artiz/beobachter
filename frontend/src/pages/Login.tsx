@@ -72,7 +72,7 @@ const Login = () => {
             justify-center
             "
         >
-            <div className="w-full md:w-2/3 lg:w-1/2 p-5 my-5 border-x border-gray-400">
+            <div className="w-full md:w-2/3 lg:w-1/2 p-5 my-5 border-x border-zinc-400">
                 <div className="flex flex-col items-center">
                     <form onSubmit={handleSubmit} className="w-1/2">
                         <h1 className="font-bold text-emerald-700 text-2xl mb-5">Login</h1>

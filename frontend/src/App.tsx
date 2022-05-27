@@ -34,7 +34,7 @@ function App() {
     }
 
     return (
-        <div className="h-screen flex flex-col bg-gray-200">
+        <div className="h-screen flex flex-col bg-zinc-200">
             {notification && (
                 <Alert
                     title="Notification"
@@ -47,7 +47,7 @@ function App() {
 
             <BrowserRouter>
                 <Header />
-                <div className="flex-grow container w-full mx-auto">
+                <div className="flex-grow container w-full mx-auto mb-10">
                     <Routes>
                         <Route path="/" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
                         <Route path="/dashboard" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />

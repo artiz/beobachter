@@ -33,7 +33,7 @@ function PopupMenu({ open = false, mt, children }: PopupMenuProps) {
     }, [show]);
 
     const baseCls =
-        "bg-gray-900 border border-gray-700 rounded shadow-md mt-2 absolute top-0 right-0 min-w-full w-56 overflow-auto z-30 ";
+        "bg-zinc-900 border border-zinc-700 rounded shadow-md mt-2 absolute top-0 right-0 min-w-full w-56 overflow-auto z-30 ";
 
     const cls = baseCls + (mt || " mt-10") + (show ? " " : " invisible");
     return (

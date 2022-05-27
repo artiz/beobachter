@@ -15,9 +15,9 @@ export default function Cmp({ path, title, color = "blue", icon = "home" }: IPro
     const location = useLocation();
     const selected = location.pathname?.startsWith(path);
     const linkCls =
-        "block py-1 md:py-2 pl-1 align-middle no-underline hover:text-gray-100 border-b-2 " +
-        (selected ? ` text-${color}-400` : " text-gray-400") +
-        (selected ? ` border-${color}-400` : " border-gray-900") +
+        "block py-1 md:py-2 pl-1 align-middle no-underline hover:text-zinc-100 border-b-2 " +
+        (selected ? ` text-${color}-400` : " text-zinc-400") +
+        (selected ? ` border-${color}-400` : " border-zinc-900") +
         ` hover:border-${color}-400`;
 
     return (

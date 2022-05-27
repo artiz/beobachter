@@ -16,8 +16,8 @@ const Input = React.forwardRef((props: InputProps, ref: React.ForwardedRef<HTMLI
     const { label, name, error, value, placeholder, groupCls = "mb-2", setter, onChange, type = "text" } = props;
     const inputCls =
         "shadow appearance-none border rounded w-full " +
-        " py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline " +
-        (error ? " border-red-500 " : " border-gray-300 ");
+        " py-2 px-3 text-zinc-700 mb-3 leading-tight focus:outline-none focus:shadow-outline " +
+        (error ? " border-red-500 " : " border-zinc-300 ");
 
     const handleChange = React.useCallback(
         (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,7 @@ const Input = React.forwardRef((props: InputProps, ref: React.ForwardedRef<HTMLI
     return (
         <div className={groupCls}>
             {label && (
-                <label className="block text-gray-700 text-sm font-bold mb-1" htmlFor={name}>
+                <label className="block text-zinc-700 text-sm font-bold mb-1" htmlFor={name}>
                     {label}
                 </label>
             )}

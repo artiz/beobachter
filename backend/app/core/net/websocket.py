@@ -68,7 +68,7 @@ class RedisBroadcaster(ConnectionManager):
         self.ps.subscribe([self.channel])
 
         while True:
-            if self._stopped:
+            if self.stopped():
                 break
             msg = self.ps.get_message()
             if msg and msg["type"] == "message":
@@ -78,6 +78,3 @@ class RedisBroadcaster(ConnectionManager):
 
         self.ps.unsubscribe()
         self.r.close()
-
-    async def stop(self):
-        super().stop()

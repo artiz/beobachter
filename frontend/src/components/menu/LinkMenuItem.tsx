@@ -13,7 +13,7 @@ function LinkMenuItem({ to, wrap = false, onClick, children }: LinkMenuItemProps
         <Link
             to={to}
             onClick={onClick}
-            className="px-4 py-2 block text-gray-100 hover:bg-gray-800 no-underline hover:no-underline"
+            className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
         >
             {children}
         </Link>

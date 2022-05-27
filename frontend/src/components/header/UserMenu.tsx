@@ -19,10 +19,10 @@ function UserMenu() {
 
     return (
         <>
-            <div className="relative text-gray-100">
+            <div className="relative text-zinc-100">
                 <button id="userButton" onClick={handleMenuClick} className="flex items-center focus:outline-none mr-3">
-                    <img className="w-8 h-8 rounded-full mr-2 bg-gray-200" src={avatar} alt="Avatar of User" />{" "}
-                    <span className="hidden md:inline-block text-gray-100 mr-2">{userName}</span>
+                    <img className="w-8 h-8 rounded-full mr-2 bg-zinc-200" src={avatar} alt="Avatar of User" />{" "}
+                    <span className="hidden md:inline-block text-zinc-100 mr-2">{userName}</span>
                     <Icon icon={["fas", showUserMenu ? "angle-up" : "angle-down"]} />
                 </button>
 
@@ -32,7 +32,7 @@ function UserMenu() {
                         <LinkMenuItem to="/account">My account</LinkMenuItem>
                         <LinkMenuItem to="/notifications">Notifications</LinkMenuItem>
                         <li>
-                            <hr className="border-t mx-2 border-gray-400" />
+                            <hr className="border-t mx-2 border-zinc-400" />
                         </li>
                         <LinkMenuItem to="/login" onClick={doLogout}>
                             Logout
