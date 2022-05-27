@@ -51,6 +51,7 @@ async def get_current_user(
         raise credentials_exception
 
     user = get_user_by_email(db, email)
+    db.close()
     if user is None:
         raise credentials_exception
     return user
@@ -72,7 +73,10 @@ async def check_current_user(
         # TODO: add log
         return None
 
-    return get_user_by_email(db, email)
+    user = get_user_by_email(db, email)
+    # manual close to support websockets
+    db.close()
+    return user
 
 
 async def get_current_active_user(

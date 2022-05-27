@@ -1,14 +1,13 @@
 import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { usePerfMetricsState } from "core/metrics/usePerfMetricsState";
-import Button from "components/button/Button";
 import LoadingCircle from "components/state/LoadingCircle";
 
 const Dashboard = () => {
     const [metrics, metricsLoading] = usePerfMetricsState();
 
     return (
-        <div className="w-full flex flex-wrap flex-grow">
+        <div className="w-full flex flex-wrap flex-grow mb-5">
             {/* Console Content */}
 
             <div className="flex flex-wrap flex-grow w-full md:w-1/2">
@@ -28,7 +27,7 @@ const Dashboard = () => {
                                             <LoadingCircle height="h-6" width="w-full" />
                                         </div>
                                     ) : (
-                                        metrics?.cpu_perc ?? "N/A"
+                                        metrics?.cpu_perc ?? <i>...</i>
                                     )}
                                 </h3>
                             </div>
@@ -51,7 +50,7 @@ const Dashboard = () => {
                                             <LoadingCircle height="h-6" width="w-full" />
                                         </div>
                                     ) : (
-                                        metrics?.vm_perc ?? "N/A"
+                                        metrics?.vm_perc ?? <i>...</i>
                                     )}
                                     {/* {" "}<span className="text-pink-500"><Icon icon={["fas", "exchange-alt"]} /> </span> */}
                                 </h3>

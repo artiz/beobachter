@@ -1,4 +1,5 @@
 import config from "core/config";
+import { formatAuthError } from "core/hooks/useAppNotifier";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import * as moment from "moment";
 
@@ -50,6 +51,10 @@ export class JsonResponse<T = unknown> extends Response {
     }
 }
 
+export interface ApiOptions {
+    skipAuthCheck?: boolean;
+}
+
 export class APIClient {
     // ----- Authentication & User Operations
 
@@ -64,7 +69,7 @@ export class APIClient {
             form.append(key, item[key].toString());
         }
 
-        const response = await this.post<ApiTokenResponse>("/auth/login", form, {});
+        const response = await this.post<ApiTokenResponse>("/auth/login", form, {}, { skipAuthCheck: true });
 
         if (response.data?.access_token) {
             localStorage.setItem(API_TOKEN, response.data?.access_token);
@@ -81,11 +86,13 @@ export class APIClient {
         method,
         body,
         headers = {},
+        options = {},
     }: {
         url: string;
         method: string;
         body?: BodyInit;
         headers?: Record<string, string>;
+        options: ApiOptions;
     }): Promise<JsonResponse<T>> {
         const response = await fetch(config.apiBasePath + url, this.prepareRequest({ method, body, headers }));
 
@@ -97,9 +104,10 @@ export class APIClient {
         if (response.status > 499) {
             throw new Error(`${response.statusText || "Server error"} ${response.status}`);
         }
-        if ([401, 403].includes(response.status)) {
-            // TODO: window.postMessage(AUTH_ERROR)
-            throw AuthenticationError.fromCode(response.status);
+        if (!options.skipAuthCheck) {
+            if ([401, 403].includes(response.status)) {
+                window.postMessage(formatAuthError(AuthenticationError.fromCode(response.status)));
+            }
         }
         if (response.status > 399) {
             throw new Error(`${response.statusText || "Request error"} ${response.status}`);
@@ -108,16 +116,21 @@ export class APIClient {
         return result;
     }
 
-    async get<T = unknown>(url: string, headers: Record<string, string> = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "get", headers });
+    async get<T = unknown>(
+        url: string,
+        headers: Record<string, string> = {},
+        options: ApiOptions = {}
+    ): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "get", headers, options });
     }
 
     async post<T = unknown>(
         url: string,
         body: BodyInit,
-        headers: Record<string, string> = {}
+        headers: Record<string, string> = {},
+        options: ApiOptions = {}
     ): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "post", body, headers });
+        return this.exec<T>({ url, method: "post", body, headers, options });
     }
 
     private prepareRequest({

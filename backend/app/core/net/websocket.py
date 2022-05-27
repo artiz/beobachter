@@ -1,3 +1,4 @@
+from contextlib import suppress
 from fastapi import WebSocket, status
 from websockets.exceptions import ConnectionClosed
 from typing import List, Optional, Set
@@ -16,17 +17,20 @@ class ConnectionManager:
         self.active_connections.append(websocket)
 
     async def process_auth_error(self, websocket: WebSocket):
-        await websocket.send_text('{"type": "auth_error"}')
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-        self.active_connections.remove(websocket)
+        try:
+            await websocket.close(
+                code=status.WS_1008_POLICY_VIOLATION, reason="auth_error"
+            )
+        finally:
+            with suppress(ValueError):
+                self.active_connections.remove(websocket)
 
     async def disconnect(self, websocket: WebSocket):
         try:
             await websocket.close()
-        except:
-            ...
-
-        self.active_connections.remove(websocket)
+        finally:
+            with suppress(ValueError):
+                self.active_connections.remove(websocket)
 
     def stopped(self):
         return self._stopped

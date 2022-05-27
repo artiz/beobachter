@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useMemo, useState } from "react";
+import React, { FormEvent, useCallback, useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "components/button/Button";
@@ -14,9 +14,10 @@ const Login = () => {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-
     const [error, setError] = useState<string>();
 
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
     // admin@fastapi-react-project.com
     const handleLogin = useCallback(() => {
         if (!username) {
@@ -28,7 +29,7 @@ const Login = () => {
         client
             .login(username, password || "")
             .catch((err) => setError(err.message || "Invalid credentials"))
-            .then(() => navigate("/", { replace: true }))
+            .then(() => navigate("/"))
             .finally(() => setLoading(false));
     }, [username, password]);
 
@@ -40,6 +41,24 @@ const Login = () => {
         },
         [handleLogin]
     );
+
+    useEffect(() => {
+        setTimeout(() => {
+            const username = usernameRef?.current;
+            const password = passwordRef?.current;
+
+            if (username && password) {
+                username.focus();
+                const interval = setInterval(() => {
+                    if (username && username.value) {
+                        setUsername(username.value);
+                        setPassword(password.value);
+                        clearInterval(interval);
+                    }
+                }, 100);
+            }
+        }, 1000);
+    }, [usernameRef]);
 
     const inputValid = useMemo(
         () => !!username?.toString()?.trim() && !!password?.toString()?.trim(),
@@ -58,8 +77,15 @@ const Login = () => {
                     <form onSubmit={handleSubmit} className="w-1/2">
                         <h1 className="font-bold text-emerald-700 text-2xl mb-5">Login</h1>
 
-                        <Input label="Username (e-mail)" name="username" value={username} setter={setUsername}></Input>
                         <Input
+                            ref={usernameRef}
+                            label="Username (e-mail)"
+                            name="username"
+                            value={username}
+                            setter={setUsername}
+                        ></Input>
+                        <Input
+                            ref={passwordRef}
                             label="Password"
                             name="password"
                             type="password"
@@ -72,7 +98,9 @@ const Login = () => {
                         </Button>
                     </form>
 
-                    {error && <Alert title={error} text="Please check username/password" />}
+                    {error && (
+                        <Alert baseClass="mt-4" color="orange" title="Error" text="Please check username/password" />
+                    )}
                 </div>
             </div>
         </div>

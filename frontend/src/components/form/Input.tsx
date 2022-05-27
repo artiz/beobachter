@@ -12,17 +12,8 @@ interface InputProps {
     type?: string;
 }
 
-function Input({
-    label,
-    name,
-    error,
-    value,
-    placeholder,
-    groupCls = "mb-2",
-    setter,
-    onChange,
-    type = "text",
-}: InputProps) {
+const Input = React.forwardRef((props: InputProps, ref: React.ForwardedRef<HTMLInputElement>) => {
+    const { label, name, error, value, placeholder, groupCls = "mb-2", setter, onChange, type = "text" } = props;
     const inputCls =
         "shadow appearance-none border rounded w-full " +
         " py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline " +
@@ -46,14 +37,17 @@ function Input({
             <input
                 type={type}
                 name={name}
-                value={value}
+                defaultValue={value}
                 placeholder={placeholder}
                 onChange={handleChange}
                 className={inputCls}
+                ref={ref}
             />
             {error && <p className="text-red-500 text-xs italic">{error}</p>}
         </div>
     );
-}
+});
+
+Input.displayName = "Input";
 
 export default Input;

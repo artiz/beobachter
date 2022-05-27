@@ -2,10 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { API_TOKEN } from "core/api/client";
 import { User, JwtUser } from "core/models/user";
 import jwtDecode from "jwt-decode";
+import { useAppNotifier, useAppNotificationListener, formatError } from "./useAppNotifier";
 
 export function useAuthStatus(): [User | undefined, boolean, () => void] {
     const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState<boolean>(true);
+    const [notify] = useAppNotifier();
+    const [notification] = useAppNotificationListener();
 
     const loadToken = () => {
         const token = localStorage.getItem(API_TOKEN);
@@ -14,12 +17,15 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
                 const jwtUser = jwtDecode<JwtUser>(token);
                 const user = User.fromJwt(jwtUser);
                 setUser(user);
-
-                // avatarUrl
             } catch (e) {
-                // TODO: P1 - handle token error
-                // const notifier = useAppNotifier();
-                // notifier.error(e);
+                if (e instanceof Error) {
+                    notify(
+                        formatError(e.toString(), {
+                            name: e.name,
+                            stack: e.stack,
+                        })
+                    );
+                }
                 setUser(undefined);
             }
         } else {
@@ -44,6 +50,12 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
         setUser(undefined);
         window.postMessage(API_TOKEN);
     }, []);
+
+    useEffect(() => {
+        if (notification?.type === "auth_error") {
+            doLogout();
+        }
+    }, [notification, doLogout]);
 
     useEffect(() => {
         loadToken();
