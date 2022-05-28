@@ -1,5 +1,4 @@
-import React, { Children } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { ThailwindColor } from "ui/thailwind";
@@ -30,7 +29,7 @@ export default function Cmp({
     }
 
     const rootCls = `w-full md:w-${size} p-${padding}`;
-    const bodyCls = `p-${bodyPadding}`;
+    const bodyCls = `relative p-${bodyPadding}`;
     const contentCls = `bg-${color}-900 border border-${color}-800 rounded shadow text-${color}-500`;
     const headerCls = `flex flex-row border-b border-${color}-800 p-${bodyPadding}`;
     const titleCls = `font-bold uppercase`;

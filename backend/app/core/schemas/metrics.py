@@ -3,9 +3,9 @@ from pydantic import BaseModel
 
 
 class PerfMetrics(BaseModel):
-    cpu_perc: float  # percent
-    vm_perc: float  # percent
+    cpu_p: float  # percent
+    vm_p: float  # percent
     ts: int
 
     def __str__(self) -> None:
-        return f"CPU%: {self.cpu_perc}, VM%: {self.vm_perc}"
+        return f"CPU%: {self.cpu_p}, VM%: {self.vm_p}"

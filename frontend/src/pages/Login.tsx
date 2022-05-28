@@ -43,21 +43,18 @@ const Login = () => {
     );
 
     useEffect(() => {
-        setTimeout(() => {
+        const tm = setTimeout(() => {
             const username = usernameRef?.current;
             const password = passwordRef?.current;
 
             if (username && password) {
-                username.focus();
-                const interval = setInterval(() => {
-                    if (username && username.value) {
-                        setUsername(username.value);
-                        setPassword(password.value);
-                        clearInterval(interval);
-                    }
-                }, 100);
+                // username.focus();
+                const evt = new Event("focus");
+                username.dispatchEvent(evt);
             }
-        }, 1000);
+        }, 200);
+
+        return () => clearTimeout(tm);
     }, [usernameRef]);
 
     const inputValid = useMemo(

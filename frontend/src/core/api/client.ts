@@ -1,5 +1,5 @@
 import config from "core/config";
-import { formatAuthError } from "core/hooks/useAppNotifier";
+import { sendNotification, formatAuthError, formatError } from "core/hooks/useAppNotifier";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import * as moment from "moment";
 
@@ -53,6 +53,7 @@ export class JsonResponse<T = unknown> extends Response {
 
 export interface ApiOptions {
     skipAuthCheck?: boolean;
+    skipStatusCheck?: boolean;
 }
 
 export class APIClient {
@@ -101,16 +102,17 @@ export class APIClient {
             result.data = (await response.json()) as T;
         }
 
-        if (response.status > 499) {
-            throw new Error(`${response.statusText || "Server error"} ${response.status}`);
-        }
         if (!options.skipAuthCheck) {
             if ([401, 403].includes(response.status)) {
-                window.postMessage(formatAuthError(AuthenticationError.fromCode(response.status)));
+                sendNotification(formatAuthError(AuthenticationError.fromCode(response.status)));
             }
         }
-        if (response.status > 399) {
-            throw new Error(`${response.statusText || "Request error"} ${response.status}`);
+        if (!options.skipStatusCheck) {
+            if (response.status > 499) {
+                sendNotification(formatError(`${response.statusText || "Server error"} ${response.status}`));
+            } else if (response.status > 399) {
+                sendNotification(formatError(`${response.statusText || "Request error"} ${response.status}`));
+            }
         }
 
         return result;

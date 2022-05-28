@@ -26,7 +26,6 @@ function UserMenu() {
                     <Icon icon={["fas", showUserMenu ? "angle-up" : "angle-down"]} />
                 </button>
 
-                {/* invisible */}
                 <PopupMenu open={showUserMenu}>
                     <ul>
                         <LinkMenuItem to="/account">My account</LinkMenuItem>

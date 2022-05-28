@@ -1,5 +1,5 @@
 import React, { FormEvent, useCallback } from "react";
-import { APIClient } from "core/api/client";
+// import { APIClient } from "core/api/client";
 import Button from "components/button/Button";
 
 const SignUp = () => {

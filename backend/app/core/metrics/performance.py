@@ -53,8 +53,8 @@ class PerfMetricsLoader:
     def _get_metrics(self) -> PerfMetrics:
         mem = psutil.virtual_memory()
         m = PerfMetrics(
-            cpu_perc=psutil.cpu_percent(),
-            vm_perc=mem.percent,
+            cpu_p=psutil.cpu_percent(),
+            vm_p=mem.percent,
             ts=self.utc_now(),
         )
 

@@ -1,18 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import config from "core/config";
 import { API_TOKEN } from "core/api/client";
-import { useAppNotifier, formatAuthError } from "core/hooks/useAppNotifier";
+import { sendNotification, formatAuthError } from "core/hooks/useAppNotifier";
 
 export interface IPerfMetrics {
-    cpu_perc: number;
-    vm_perc: number;
+    cpu_p: number;
+    vm_p: number;
     ts: number;
 }
 
 export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
     const [metrics, setMetrics] = useState<IPerfMetrics>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [notify] = useAppNotifier();
     const websocket = useRef<WebSocket>();
 
     const connectSocket = useCallback(() => {
@@ -36,7 +35,7 @@ export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
 
         ws.onclose = (evt: CloseEvent) => {
             if (evt.code > 1000) {
-                notify(formatAuthError());
+                sendNotification(formatAuthError());
             }
             setLoading(false);
         };

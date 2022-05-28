@@ -39,9 +39,13 @@ export function formatError(message: string, data: Dictionary<string> = {}): App
     return notify;
 }
 
+export function sendNotification(notification: AppNotification) {
+    window.postMessage(notification);
+}
+
 export function useAppNotifier(): [(notification: AppNotification) => void] {
     const notify = useCallback((notification: AppNotification) => {
-        window.postMessage(notification);
+        sendNotification(notification);
     }, []);
 
     return [notify];

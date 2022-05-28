@@ -6,6 +6,8 @@ interface PopupMenuProps {
     children?: React.ReactNode;
 }
 
+// TODO: refactor with opperjs/core@2.9.1
+// https://www.creative-tim.com/learning-lab/tailwind-starter-kit/documentation/react/dropdown
 function PopupMenu({ open = false, mt, children }: PopupMenuProps) {
     const [show, setShow] = useState<boolean>();
     const menuRef = useRef<HTMLDivElement>(null);
