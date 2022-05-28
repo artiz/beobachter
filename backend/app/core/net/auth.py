@@ -5,6 +5,7 @@ from jwt import PyJWTError
 from app.db import session, models
 from app.db.crud import get_user_by_email, create_user
 from app.core import security
+from app.core.config import settings
 from app.core.schemas import schemas
 
 
@@ -18,7 +19,7 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(
-            token, security.JWT_SECRET_KEY, algorithms=[security.JWT_ALGORITHM]
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         email: str = payload.get("sub")
         if email is None:

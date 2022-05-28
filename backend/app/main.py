@@ -1,8 +1,11 @@
+import uvicorn
+import asyncio
+import time
 from fastapi import FastAPI, Depends, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
-import uvicorn
-import asyncio
+from aiologger.loggers.json import JsonLogger
+
 
 from app.api.base.routers.users import users_router
 from app.api.base.routers.auth import auth_router
@@ -11,7 +14,9 @@ from app.core.config import settings
 from app.db.session import SessionLocal
 from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
-from app.core import global_app
+from app.core import global_app, util
+
+log = util.init_logger("app")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -48,16 +53,18 @@ async def app_shutdown():
 
 
 @app.middleware("http")
-async def db_session_middleware(request: Request, call_next):
-    request.state.db = SessionLocal()
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
     response = await call_next(request)
-    request.state.db.close()
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = str(process_time)
+    # log.info({"url": request.url, "time": process_time})
     return response
 
 
 @app.get(settings.API)
 async def root():
-    return {"message": "Hello World"}
+    return {"app": settings.PROJECT_NAME, "version": settings.VERSION}
 
 
 @app.get(f"{settings.API}/task")
@@ -79,4 +86,10 @@ app.include_router(system_router, prefix=settings.API, tags=["system"])
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=settings.PORT)
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        log_level="critical",
+        reload=True,
+        port=settings.PORT,
+    )

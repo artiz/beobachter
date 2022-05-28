@@ -42,7 +42,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: celery --app app.tasks worker --beat --loglevel=WARNING -Q main-queue -c 1
+    command: celery --app app.tasks worker --beat --loglevel=WARNING -Q main-queue -E -c 1 -s /tmp/celerybeat-schedule
     tty: true
     volumes:
       - ./backend:/app/:cached
@@ -54,18 +54,19 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: python app/main.py
     tty: true
     volumes:
       - ./backend:/app/:cached
       - ./.docker/.ipython:/root/.ipython:cached
     ports:
       - 8888:8888
+    command: sh app/run.sh
     environment:
       PYTHONPATH: .
       DATABASE_URI: "postgresql://postgres:password@postgres:5432/postgres"
       CELERY_BROKER: "redis://redis:6379/0"
       PORT: 8888
+      LOG_LEVEL: "DEBUG"
     depends_on:
       - postgres
 

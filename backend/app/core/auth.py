@@ -7,7 +7,9 @@ from jwt import PyJWTError
 from app.db import session, models
 from app.db.crud import get_user_by_email, create_user
 from app.core import security
+from app.core.config import settings
 from app.core.schemas import schemas
+from app.api.dependencies.common import get_log
 
 
 async def auth_bearer_token(
@@ -42,7 +44,7 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(
-            token, security.JWT_SECRET_KEY, algorithms=[security.JWT_ALGORITHM]
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         email: str = payload.get("sub")
         if email is None:
@@ -58,23 +60,22 @@ async def get_current_user(
 
 async def check_current_user(
     db=Depends(session.get_db),
+    log=Depends(get_log),
     token: str = Depends(auth_bearer_token),
 ):
     """Check authentication user presence. No exceptions are thrown."""
     try:
         payload = jwt.decode(
-            token, security.JWT_SECRET_KEY, algorithms=[security.JWT_ALGORITHM]
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
         email: str = payload.get("sub")
         if email is None:
             return None
     except Exception as er:
-        # TODO: add log
+        await log.error(er)
         return None
 
     user = get_user_by_email(db, email)
-    # manual close to support websockets
-    db.close()
     return user
 
 

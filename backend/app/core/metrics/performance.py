@@ -30,7 +30,6 @@ class PerfMetricsLoader:
 
     def get_sparse_expiration(self, period: int) -> PerfMetrics:
         """Calc sparsed expiration to store time series in Redis"""
-        # TODO: move to helper
 
         min15 = 900  # sec
         hour = 3600

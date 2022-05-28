@@ -1,15 +1,14 @@
-from fastapi import APIRouter, WebSocket, Depends, Response
+from fastapi import APIRouter, WebSocket, Depends, Response, status
 from typing import List
 import asyncio
 
 from app.core.auth import check_current_active_user, get_current_active_user
 from app.core.config import settings
 from app.core.net.websocket import ConnectionManager
-from app.core.schemas.metrics import PerfMetrics
-from app.api.dependencies.management import (
-    get_system_metrics_manager,
-    get_redis,
-)
+from app.api.dependencies.management import get_system_metrics_manager
+from app.api.dependencies.common import get_redis, get_log
+from app.core import util
+from app.db import session
 
 system_router = r = APIRouter()
 
@@ -19,24 +18,30 @@ async def ws_system_metrics(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_system_metrics_manager),
     current_user=Depends(check_current_active_user),
+    db=Depends(session.get_db),
+    log=Depends(get_log),
 ):
     """
     Websocket channel with system performance data updates
     """
+    # manual connection close to avoid pool exhaustion
+    db.close()
     if not current_user:
-        return await manager.process_auth_error(websocket)
+        await websocket.close(
+            code=status.WS_1008_POLICY_VIOLATION, reason="auth_error"
+        )
+        return
 
-    await manager.connect(websocket)
+    sock_id = await manager.connect(websocket)
     try:
         while True:
-            if manager.stopped():
+            if manager.stopped() or not manager.is_connected(sock_id):
                 break
             await asyncio.sleep(0.5)
     except Exception as ex:
-        # TODO: use logger
-        print("ws_system_metrics error", ex)
+        await log.error(ex)
     finally:
-        await manager.disconnect(websocket)
+        await manager.disconnect(sock_id)
 
 
 @r.get("/system_metrics")  # , response_model=List[PerfMetrics]
@@ -56,8 +61,6 @@ async def system_metrics(
         (cr, keys) = await redis.scan(cursor=cr, match=m, count=batch)
         points = await redis.mget(keys)
         result.extend(points)
-
-    print(result[0])
 
     content = "[" + ",".join(result) + "]"
     return Response(content, media_type="application/json")

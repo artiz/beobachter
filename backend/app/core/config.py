@@ -1,10 +1,13 @@
 import os
 from typing import List, Optional
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
+from pytz import VERSION
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "fastapi-react-project"
+    PROJECT_NAME: str = "beobachter"
+    VERSION: str = "0.0.5"
+    LOG_LEVEL: str = "info"
 
     DATABASE_URI: Optional[str] = "sqlite:///example.db"
 
@@ -12,8 +15,9 @@ class Settings(BaseSettings):
     PORT: int = 8888
     API: str = "/api"
     API_V2: str = "/api/v2"
-    JWT_SECRET: str = "TEST_SECRET_DO_NOT_USE_IN_PROD"
+    JWT_SECRET_KEY: str = "super_secret"
     JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
     # Monitoring
     CELERY_BROKER: str = "redis://redis:6379/0"
