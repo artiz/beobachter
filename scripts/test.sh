@@ -3,5 +3,5 @@
 # Exit in case of error
 set -e
 
-docker-compose run backend pytest
+docker-compose run backend pytest -p no:cacheprovider
 docker-compose run frontend test

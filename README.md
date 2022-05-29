@@ -1,12 +1,12 @@
 # Beobachter
 
-Backend/scripts based on from [`cookiecutter fastapi-react`](https://github.com/Buuntu/fastapi-react) 
+Backend/scripts based on [`cookiecutter fastapi-react`](https://github.com/Buuntu/fastapi-react) 
 
 
 ## Features
 
 - **FastAPI** with Python 3.8
-- **React 18**
+- **React 17**
 - create-react-app with Typescript
 - Postgres
 - SqlAlchemy with Alembic for migrations

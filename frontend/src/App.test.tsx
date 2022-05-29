@@ -18,7 +18,7 @@ afterEach(() => {
 
 test("renders learn react link", () => {
     render(<App />);
-    const header = screen.getByText(process.env.REACT_APP_WEBSITE_NAME as string);
+    const header = screen.getAllByText(process.env.REACT_APP_WEBSITE_NAME as string)[0];
     expect(header).toBeInTheDocument();
     ws.close();
 });

@@ -17,6 +17,6 @@ export HOST=${HOST:-0.0.0.0}
 export PORT=${PORT:-8888}
 
 # PROD: run gunicorn
-# exec gunicorn --bind $HOST:$PORT "$APP_MODULE" --log-level "critical" -k uvicorn.workers.UvicornWorker
+# exec gunicorn --bind $HOST:$PORT "$APP_MODULE" --log-level "error" -k uvicorn.workers.UvicornWorker
 
-exec uvicorn --reload --host $HOST --port $PORT "$APP_MODULE" --log-level "info"
+exec uvicorn --reload --host $HOST --port $PORT "$APP_MODULE" --log-level "error"

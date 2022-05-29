@@ -12,7 +12,7 @@ const Home = () => {
                         <p className="pt-2">
                             Project based on{" "}
                             <a
-                                className="text-zinc-600 no-underline hover:text-zinc-100 hover:text-underline"
+                                className="text-zinc-600 no-underline hover:text-zinc-100 hover:underline"
                                 href="https://github.com/Buuntu/fastapi-react"
                             >
                                 Buuntu/fastapi-react
@@ -30,45 +30,30 @@ const Home = () => {
                     </article>
                 </Widget>
             </div>
-            <div className="flex flex-wrap flex-grow w-full md:w-1/2">
-                <Widget title="Widget 1" size="1/2" color="emerald">
-                    <p>Widget content</p>
+            <div className="flex flex-wrap flex-grow w-full">
+                <Widget title="API" size="1/4" color="emerald">
+                    <p>
+                        Default Documentation:{" "}
+                        <a
+                            className="text-emerald-600 hover:text-emerald-100 hover:underline"
+                            href={config.apiBasePath + "/docs"}
+                        >
+                            /docs
+                        </a>
+                    </p>
+                    <p>
+                        Alternative Documentation:{" "}
+                        <a
+                            className="text-emerald-600 hover:text-emerald-100 hover:underline"
+                            href={config.apiBasePath + "/redoc"}
+                        >
+                            /redoc
+                        </a>
+                    </p>
                 </Widget>
 
-                <Widget title="Widget 2" size="1/2" color="blue">
+                <Widget title="UI Components" size="3/4" color="blue">
                     <p>Widget content</p>
-                </Widget>
-            </div>
-
-            <div className="flex flex-wrap flex-grow w-full md:w-1/2">
-                <Widget title="Table" size="1" color="amber">
-                    <table className="w-full p-5">
-                        <thead>
-                            <tr>
-                                <th className="text-left">Name</th>
-                                <th className="text-left">Side</th>
-                                <th className="text-left">Role</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr>
-                                <td>Obi Wan Kenobi</td>
-                                <td>Light</td>
-                                <td>Jedi</td>
-                            </tr>
-                            <tr>
-                                <td>Greedo</td>
-                                <td>South</td>
-                                <td>Scumbag</td>
-                            </tr>
-                            <tr>
-                                <td>Darth Vader</td>
-                                <td>Dark</td>
-                                <td>Sith</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </Widget>
             </div>
         </div>

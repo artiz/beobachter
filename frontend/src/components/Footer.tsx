@@ -22,7 +22,7 @@ const Footer = () => {
                                 <li>
                                     Author&nbsp;
                                     <a
-                                        className="inline-block text-zinc-600 no-underline hover:text-zinc-100 hover:text-underline py-1"
+                                        className="inline-block text-zinc-600 no-underline hover:text-zinc-100 hover:underline py-1"
                                         href="https://artiz.github.io/"
                                     >
                                         artiz.github.io
@@ -31,7 +31,7 @@ const Footer = () => {
                                 <li>
                                     Source&nbsp;
                                     <a
-                                        className="inline-block text-zinc-600 no-underline hover:text-zinc-100 hover:text-underline py-1"
+                                        className="inline-block text-zinc-600 no-underline hover:text-zinc-100 hover:underline py-1"
                                         href="https://github.com/Buuntu/fastapi-react"
                                     >
                                         Buuntu/fastapi-react

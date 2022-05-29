@@ -20,6 +20,7 @@ log = util.init_logger("app")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
+    version=settings.VERSION,
     docs_url=f"{settings.API}/docs",
     redoc_url=f"{settings.API}/redoc",
     openapi_url=f"{settings.API}/openapi",
@@ -43,6 +44,7 @@ startup_task = None
 @app.on_event("startup")
 async def app_startup():
     global startup_task
+    await log.info("app startup...")
     startup_task = asyncio.ensure_future(global_app.startup())
 
 
@@ -52,14 +54,39 @@ async def app_shutdown():
     asyncio.create_task(global_app.shutdown())
 
 
-@app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    response.headers["X-Process-Time"] = str(process_time)
-    # log.info({"url": request.url, "time": process_time})
-    return response
+# @app.middleware("http")
+# async def add_process_time_header(request: Request, call_next):
+#     start_time = time.time()
+#     response = await call_next(request)
+#     process_time = time.time() - start_time
+#     response.headers["X-Process-Time"] = str(process_time)
+#     return response
+
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+# TODO: move to middlewares
+class RequestLogMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(
+        self, scope: Scope, receive: Receive, send: Send
+    ) -> None:
+        if scope["type"] not in ["http", "websocket"]:
+            await self.app(scope, receive, send)
+            return
+
+        await log.info(
+            "{} {} {}".format(
+                scope["type"],
+                scope.get("method", "-"),
+                scope["path"],
+            ),
+        )
+        await self.app(scope, receive, send)
+
+
+app.add_middleware(RequestLogMiddleware)
 
 
 @app.get(settings.API)

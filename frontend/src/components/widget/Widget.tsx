@@ -9,7 +9,7 @@ interface IProps {
     icon?: IconName;
     iconColor?: ThailwindColor;
     children?: React.ReactNode;
-    size?: "1" | "1/2" | "1/4";
+    size?: "1" | "1/2" | "1/4" | "3/4";
     padding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
     bodyPadding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
 }
