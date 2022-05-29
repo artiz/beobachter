@@ -20,8 +20,8 @@ export default function Cmp({
     icon,
     iconColor,
     size = "1",
-    padding = "2",
-    bodyPadding = "2",
+    padding = "3",
+    bodyPadding = "3",
     children,
 }: IProps) {
     if (!iconColor) {

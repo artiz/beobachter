@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { useAuthStatus } from "core/hooks/useAuthStatus";
-import PopupMenu from "components/menu/PopupMenu";
-import LinkMenuItem from "components/menu/LinkMenuItem";
+import PopupMenu from "components/dropdown/PopupMenu";
+import LinkMenuItem from "components/dropdown/LinkMenuItem";
 
 function UserMenu() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

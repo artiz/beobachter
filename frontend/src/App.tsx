@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "components/header/Header";
 import Footer from "components/Footer";
-import Dashboard from "pages/Dashboard";
+import Home from "pages/Home";
+import Monitoring from "pages/Monitoring";
 import Error from "pages/Error";
 import Login from "pages/Login";
 import SignUp from "pages/SignUp";
@@ -49,8 +50,9 @@ function App() {
                 <Header />
                 <div className="flex-grow container w-full mx-auto mb-10">
                     <Routes>
-                        <Route path="/" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
-                        <Route path="/dashboard" element={<AuthRoute loading={userLoading} cmp={<Dashboard />} />} />
+                        <Route path="/" element={<Home />} />
+                        <Route path="/home" element={<Home />} />
+                        <Route path="/monitoring" element={<AuthRoute loading={userLoading} cmp={<Monitoring />} />} />
                         <Route path="/signup" element={<SignUp />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="*" element={<Error />} />

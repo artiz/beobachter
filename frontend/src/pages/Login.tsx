@@ -1,5 +1,5 @@
 import React, { FormEvent, useCallback, useMemo, useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import Button from "components/button/Button";
 
@@ -10,6 +10,7 @@ import Alert from "components/state/Alert";
 const Login = () => {
     const client = new APIClient();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -29,7 +30,11 @@ const Login = () => {
         client
             .login(username, password || "")
             .catch((err) => setError(err.message || "Invalid credentials"))
-            .then(() => navigate("/"))
+            .then(() => {
+                if (location.pathname === "/login") {
+                    navigate("/");
+                }
+            })
             .finally(() => setLoading(false));
     }, [username, password]);
 

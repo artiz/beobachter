@@ -28,7 +28,7 @@ export default function Cmp({ title, field, data = [], lineColor = ChartColors[0
                 data={data}
                 margin={{
                     top: 5,
-                    right: 10,
+                    right: 5,
                     left: 0,
                     bottom: 5,
                 }}

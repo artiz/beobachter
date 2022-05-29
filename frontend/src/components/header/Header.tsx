@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
@@ -9,10 +9,22 @@ import HeaderLink from "./HeaderLink";
 
 function Header() {
     const [user, userLoading] = useAuthStatus();
+    const [showNav, setShowNav] = useState<boolean>(false);
+    const toggleNav = useCallback(() => {
+        setShowNav(!showNav);
+    }, [showNav]);
+
+    const navBarCls = useMemo(
+        () =>
+            `w-full flex-grow lg:flex lg:items-center lg:w-auto ${
+                showNav ? "block" : "hidden"
+            } lg:block mt-2 lg:mt-0 bg-zinc-900 z-2`,
+        [showNav]
+    );
 
     return (
         <>
-            <nav id="header" className="bg-zinc-900 fixed w-full z-10 top-0 shadow">
+            <nav id="header" className="bg-zinc-900 fixed w-full z-10 top-0 border-b border-zinc-500">
                 <div className="w-full container mx-auto flex flex-wrap items-center mt-0 py-2 px-2 md:pb-1">
                     <div className="w-1/2 pl-2 md:pl-0">
                         <Link
@@ -29,8 +41,8 @@ function Header() {
                                     <UserMenu />
                                     <div className="block lg:hidden pr-4">
                                         <button
-                                            id="nav-toggle"
-                                            className="flex items-center px-3 py-2 border rounded text-zinc-500 border-zinc-600 hover:text-zinc-100 hover:border-teal-500 appearance-none focus:outline-none"
+                                            onClick={toggleNav}
+                                            className="flex items-center px-3 py-2 border rounded text-zinc-500 border-zinc-600 hover:text-zinc-100 hover:border-zinc-500 appearance-none"
                                         >
                                             <Icon icon={["fas", "bars"]} />
                                         </button>
@@ -57,17 +69,16 @@ function Header() {
                         </div>
                     </div>
 
-                    <div
-                        className="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block mt-2 lg:mt-0 bg-zinc-900 z-20"
-                        id="nav-content"
-                    >
+                    <div className={navBarCls}>
                         <ul className="list-reset lg:flex flex-1 items-center px-4 md:px-0">
+                            <>
+                                <HeaderLink path="/home" title="Home" color="blue" icon="home" />
+                            </>
                             {user && (
                                 <>
-                                    <HeaderLink path="/dashboard" title="Dashboard" color="blue" icon="home" />
                                     <HeaderLink path="/monitoring" title="Monitoring" color="green" icon="chart-area" />
+                                    <HeaderLink path="/users" title="Users" color="purple" icon="users" />
                                     <HeaderLink path="/tasks" title="Tasks" color="pink" icon="tasks" />
-                                    <HeaderLink path="/messages" title="Messages" color="purple" icon="envelope" />
                                 </>
                             )}
                         </ul>
