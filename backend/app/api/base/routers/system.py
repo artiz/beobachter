@@ -2,7 +2,11 @@ from fastapi import APIRouter, WebSocket, Depends, Response, status
 from typing import List
 import asyncio
 
-from app.core.auth import check_current_active_user, get_current_active_user
+from app.core.auth import (
+    check_current_active_user,
+    get_current_active_user,
+    get_jwt_token_decoder,
+)
 from app.core.config import settings
 from app.core.net.websocket import ConnectionManager
 from app.api.dependencies.management import get_system_metrics_manager
@@ -20,6 +24,7 @@ async def ws_system_metrics(
     current_user=Depends(check_current_active_user),
     db=Depends(session.get_db),
     log=Depends(get_log),
+    jwt_checker=Depends(get_jwt_token_decoder),
 ):
     """
     Websocket channel with system performance data updates
@@ -38,6 +43,7 @@ async def ws_system_metrics(
             if manager.stopped() or not manager.is_connected(sock_id):
                 break
             await asyncio.sleep(0.5)
+            jwt_checker(current_user.token)
     except Exception as ex:
         await log.error(ex)
     finally:

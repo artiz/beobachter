@@ -1,12 +1,12 @@
+import logging
 import sys
 import random
 from uuid import UUID
+from app.core.config import settings
 from aiologger.loggers.json import JsonLogger
 from aiologger import Logger
 from aiologger.formatters.base import Formatter
 from aiologger.utils import CallableWrapper
-
-from app.core.config import settings
 
 current_func_name = lambda n=0: sys._getframe(n + 1).f_code.co_name
 

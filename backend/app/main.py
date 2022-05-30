@@ -3,9 +3,6 @@ import asyncio
 import time
 from fastapi import FastAPI, Depends, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.requests import Request
-from aiologger.loggers.json import JsonLogger
-
 
 from app.api.base.routers.users import users_router
 from app.api.base.routers.auth import auth_router
@@ -44,7 +41,7 @@ startup_task = None
 @app.on_event("startup")
 async def app_startup():
     global startup_task
-    await log.info("app startup...")
+    log.info("app startup...")
     startup_task = asyncio.ensure_future(global_app.startup())
 
 
@@ -76,7 +73,7 @@ class RequestLogMiddleware:
             await self.app(scope, receive, send)
             return
 
-        await log.info(
+        log.info(
             "{} {} {}".format(
                 scope["type"],
                 scope.get("method", "-"),

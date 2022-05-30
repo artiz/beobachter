@@ -71,11 +71,15 @@ async def check_current_user(
         email: str = payload.get("sub")
         if email is None:
             return None
+
+        email: str = payload.get("sub")
+
     except Exception as er:
         await log.error(er)
         return None
 
     user = get_user_by_email(db, email)
+    user.token = token
     return user
 
 
@@ -93,6 +97,15 @@ async def check_current_active_user(
     if not current_user or not current_user.is_active:
         return None
     return current_user
+
+
+async def get_jwt_token_decoder():
+    def decoder(token: str):
+        jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
+
+    return decoder
 
 
 async def get_current_active_superuser(

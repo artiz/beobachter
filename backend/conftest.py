@@ -1,9 +1,11 @@
+import logging
 import pytest
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from fastapi.testclient import TestClient
 import typing as t
+from unittest.mock import patch
 
 from app.core import security
 from app.core.config import settings
@@ -11,10 +13,16 @@ from app.core.config import settings
 from app.db.session import Base, get_db
 from app.db import models
 from app.main import app
+from app.core import util
 
 
 def get_test_db_url() -> str:
     return f"{settings.DATABASE_URI}_test"
+
+
+@patch("util.init_logger")
+def test_db(init_logger):
+    init_logger.return_value = logging.getLogger("app")
 
 
 @pytest.fixture

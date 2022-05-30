@@ -180,7 +180,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
                     {...getReferenceProps({
                         ...props,
                         ref: mergedReferenceRef,
-                        // onClick: ({ currentTarget }) => (currentTarget as HTMLButtonElement).focus(),
+                        onClick: ({ currentTarget }) => (currentTarget as HTMLButtonElement).focus(),
                         ...(nested
                             ? {
                                   role: "menuitem",
