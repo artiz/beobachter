@@ -15,9 +15,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
 
 
 def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
-    response = client.delete(
-        f"/api/users/{test_superuser.id}", headers=superuser_token_headers
-    )
+    response = client.delete(f"/api/users/{test_superuser.id}", headers=superuser_token_headers)
     assert response.status_code == 200
     assert test_db.query(models.User).all() == []
 
@@ -55,9 +53,7 @@ def test_edit_user_not_found(client, test_db, superuser_token_headers):
         "is_superuser": False,
         "password": "new_password",
     }
-    response = client.put(
-        "/api/users/1234", json=new_user, headers=superuser_token_headers
-    )
+    response = client.put("/api/users/1234", json=new_user, headers=superuser_token_headers)
     assert response.status_code == 404
 
 
@@ -66,9 +62,7 @@ def test_get_user(
     test_user,
     superuser_token_headers,
 ):
-    response = client.get(
-        f"/api/users/{test_user.id}", headers=superuser_token_headers
-    )
+    response = client.get(f"/api/users/{test_user.id}", headers=superuser_token_headers)
     assert response.status_code == 200
     assert response.json() == {
         "id": test_user.id,

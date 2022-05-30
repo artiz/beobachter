@@ -24,6 +24,4 @@ def perf_metrics() -> int:
 # Configure celery beat
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(
-        settings.PERF_DATA_INTERVAL, perf_metrics.s(), name="Get perf metrics"
-    )
+    sender.add_periodic_task(settings.PERF_DATA_INTERVAL, perf_metrics.s(), name="Get perf metrics")

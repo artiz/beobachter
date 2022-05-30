@@ -17,14 +17,10 @@ def uuid4_fast():
 
 def init_logger(name: str = "app", json_format: bool = False):
     if json_format:
-        log = JsonLogger.with_default_handlers(
-            name=name, flatten=True, level=settings.LOG_LEVEL
-        )
+        log = JsonLogger.with_default_handlers(name=name, flatten=True, level=settings.LOG_LEVEL)
     else:
         fmt = Formatter("%(levelname)-9s [%(name)s] %(message)s")
-        log = Logger.with_default_handlers(
-            name=name, level=settings.LOG_LEVEL, formatter=fmt
-        )
+        log = Logger.with_default_handlers(name=name, level=settings.LOG_LEVEL, formatter=fmt)
 
     log.wrapper = CallableWrapper
     return log

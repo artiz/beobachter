@@ -32,9 +32,7 @@ async def ws_system_metrics(
     # manual connection close to avoid pool exhaustion
     db.close()
     if not current_user:
-        await websocket.close(
-            code=status.WS_1008_POLICY_VIOLATION, reason="auth_error"
-        )
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="auth_error")
         return
 
     sock_id = await manager.connect(websocket)

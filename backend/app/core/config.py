@@ -34,9 +34,7 @@ class Settings(BaseSettings):
     ]
 
     # Origins that match this regex OR are in the above list are allowed
-    BACKEND_CORS_ORIGIN_REGEX: Optional[
-        str
-    ] = "https.*\\.beobachter\\.herokuapp.com"
+    BACKEND_CORS_ORIGIN_REGEX: Optional[str] = "https.*\\.beobachter\\.herokuapp.com"
 
 
 settings = Settings()

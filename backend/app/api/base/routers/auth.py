@@ -12,9 +12,7 @@ auth_router = r = APIRouter()
 
 
 @r.post("/login")
-async def login(
-    db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -23,9 +21,7 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = security.create_access_token(
         data=format_user(user),
@@ -36,9 +32,7 @@ async def login(
 
 
 @r.post("/signup")
-async def signup(
-    db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()
-):
+async def signup(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     user = sign_up_new_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -46,9 +40,7 @@ async def signup(
             detail="Account already exists",
         )
 
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     access_token = security.create_access_token(
         data=format_user(user),
