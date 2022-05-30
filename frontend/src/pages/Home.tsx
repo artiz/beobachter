@@ -65,7 +65,7 @@ const Home = () => {
 
                 <Widget title="UI Components" size="3/4" color="zinc">
                     <section className="p-2 border border-indigo-200">
-                        Dropdown:{" "}
+                        Dropdown: {/* TODO: add icon support */}
                         <Menu label="Edit" color="slate" hovercolor="emerald">
                             <MenuItem label="Undo" />
                             <MenuItem label="Redo" />

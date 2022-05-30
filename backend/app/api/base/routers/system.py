@@ -1,5 +1,5 @@
-from fastapi import APIRouter, WebSocket, Depends, Response, status
-from typing import List
+from fastapi import APIRouter, WebSocket, Depends, Response, HTTPException, status
+from typing import List, Optional
 import asyncio
 
 from app.core.auth import (
@@ -13,6 +13,7 @@ from app.api.dependencies.management import get_system_metrics_manager
 from app.api.dependencies.common import get_redis, get_log
 from app.core import util
 from app.db import session
+from app.core.schemas.metrics import PerfMetrics
 
 system_router = r = APIRouter()
 
@@ -48,23 +49,37 @@ async def ws_system_metrics(
         await manager.disconnect(sock_id)
 
 
-@r.get("/system_metrics")  # , response_model=List[PerfMetrics]
+@r.get("/system_metrics/{metric}")  # , response_model=List[PerfMetrics]
 async def system_metrics(
     redis=Depends(get_redis),
     current_user=Depends(get_current_active_user),
+    metric: Optional[str] = "cpu_p",
 ):
     """
     Get with system performance data
     """
-    batch, cr = 100, 0
-    m = settings.PERF_DATA_KEY + "*"
 
-    (cr, keys) = await redis.scan(cursor=cr, match=m, count=batch)
-    result = await redis.mget(keys)
-    while cr:
-        (cr, keys) = await redis.scan(cursor=cr, match=m, count=batch)
-        points = await redis.mget(keys)
-        result.extend(points)
+    # history part
+    series = f"{settings.PERF_METRICS_KEY_PREFIX}{metric}_hour"
+    exists = await redis.exists(series)
+    if not exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Incorrect metric name: {series}",
+        )
 
-    content = "[" + ",".join(result) + "]"
-    return Response(content, media_type="application/json")
+    points = await redis.execute_command("TS.RANGE", series, "0", "+")
+    last_ts = points[-1][0] if len(points) > 0 else 0
+
+    series = f"{settings.PERF_METRICS_KEY_PREFIX}{metric}_min"
+    exists = await redis.exists(series)
+    if not exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Incorrect metric name: {series}",
+        )
+
+    min_points = await redis.execute_command("TS.RANGE", series, last_ts, "+")
+    points.extend(min_points)
+
+    return points

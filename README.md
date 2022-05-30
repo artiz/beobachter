@@ -20,6 +20,8 @@ Backend/scripts based on [`cookiecutter fastapi-react`](https://github.com/Buunt
 - **React 17**
 - create-react-app with Typescript
 - Postgres
+- Redis (PubSub and TimeSeries)
+- Celery + Beat
 - SqlAlchemy with Alembic for migrations
 - Pytest for backend tests
 - Docker compose for easier development

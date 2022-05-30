@@ -1,11 +1,10 @@
+import logging
 from app.core.celery_app import celery_app
-from celery.utils.log import get_task_logger
+from celery.utils.log import get_logger, get_task_logger
 from app.core.metrics.performance import PerfMetricsLoader
 from app.core.config import settings
 
-
-logger = get_task_logger(__name__)
-perf_loader = PerfMetricsLoader()
+perf_metrics_loader = PerfMetricsLoader()
 
 
 @celery_app.task(acks_late=True)
@@ -14,14 +13,19 @@ def example_task(word: str) -> str:
 
 
 @celery_app.task()
-def perf_metrics() -> int:
+def perf_metrics_load() -> int:
+    logger = get_task_logger(__name__)
     try:
-        perf_loader.load()
+        perf_metrics_loader.load()
     except Exception as e:
-        logger.error("perf_metrics failed", e)
+        logger.exception("perf_metrics_load failed", e)
 
 
 # Configure celery beat
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(settings.PERF_DATA_INTERVAL, perf_metrics.s(), name="Get perf metrics")
+    try:
+        perf_metrics_loader.init()
+        sender.add_periodic_task(settings.PERF_METRICS_LOAD_INTERVAL, perf_metrics_load.s(), name="Get perf metrics")
+    except Exception as e:
+        print("[ERROR] setup_periodic_tasks failed", e)

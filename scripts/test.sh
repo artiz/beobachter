@@ -4,4 +4,4 @@
 set -e
 
 docker-compose run backend pytest -p no:cacheprovider
-docker-compose run frontend test
+docker-compose run frontend npm run test:all

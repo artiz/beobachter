@@ -14,7 +14,7 @@ interface IProps {
 
 const formatDate = (ts: string | number): string => {
     if (Number.isFinite(ts)) {
-        return moment.utc(+ts * 1000).format("YYYY-MM-DD HH:mm:ss");
+        return moment.utc(+ts).format("YYYY-MM-DD HH:mm:ss");
     }
     return ts as string;
 };

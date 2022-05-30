@@ -14,3 +14,5 @@ EXPOSE 35729
 # web
 EXPOSE 3000 
 
+# ENTRYPOINT ["/bin/bash", "/app/run.sh"]
+# CMD ["start"]

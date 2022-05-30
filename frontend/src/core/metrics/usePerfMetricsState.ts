@@ -4,8 +4,8 @@ import { API_TOKEN } from "core/api/client";
 import { sendNotification, formatAuthError } from "core/hooks/useAppNotifier";
 
 export interface IPerfMetrics {
-    cpu_p: number;
-    vm_p: number;
+    cpu_p?: number;
+    vm_p?: number;
     ts: number;
 }
 

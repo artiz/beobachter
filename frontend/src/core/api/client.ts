@@ -52,8 +52,10 @@ export class JsonResponse<T = unknown> extends Response {
 }
 
 export interface ApiOptions {
+    headers?: Record<string, string>;
     skipAuthCheck?: boolean;
     skipStatusCheck?: boolean;
+    skipErrorCheck?: boolean;
 }
 
 export class APIClient {
@@ -70,7 +72,7 @@ export class APIClient {
             form.append(key, item[key].toString());
         }
 
-        const response = await this.post<ApiTokenResponse>("/auth/login", form, {}, { skipAuthCheck: true });
+        const response = await this.post<ApiTokenResponse>("/auth/login", form, { skipAuthCheck: true });
 
         if (response.data?.access_token) {
             localStorage.setItem(API_TOKEN, response.data?.access_token);
@@ -86,53 +88,61 @@ export class APIClient {
         url,
         method,
         body,
-        headers = {},
         options = {},
     }: {
         url: string;
         method: string;
         body?: BodyInit;
-        headers?: Record<string, string>;
         options: ApiOptions;
     }): Promise<JsonResponse<T>> {
-        const response = await fetch(config.apiBasePath + url, this.prepareRequest({ method, body, headers }));
+        let result: JsonResponse<T> = {} as JsonResponse<T>;
+        try {
+            const response = await fetch(
+                config.apiBasePath + url,
+                this.prepareRequest({ method, body, headers: options.headers })
+            );
+            result = response as JsonResponse<T>;
+        } catch (e) {
+            if (options.skipErrorCheck) {
+                const ex = e as Error;
+                sendNotification(
+                    formatError(ex.toString(), {
+                        name: ex.name,
+                        stack: ex.stack,
+                    })
+                );
+                return result;
+            }
 
-        const result = response as JsonResponse<T>;
-        if (response.headers.get("content-type")?.includes("json")) {
-            result.data = (await response.json()) as T;
+            throw e;
+        }
+
+        if (result?.headers?.get("content-type")?.includes("json")) {
+            result.data = (await result.json()) as T;
         }
 
         if (!options.skipAuthCheck) {
-            if ([401, 403].includes(response.status)) {
-                sendNotification(formatAuthError(AuthenticationError.fromCode(response.status)));
+            if ([401, 403].includes(result.status)) {
+                sendNotification(formatAuthError(AuthenticationError.fromCode(result.status)));
             }
         }
         if (!options.skipStatusCheck) {
-            if (response.status > 499) {
-                sendNotification(formatError(`${response.statusText || "Server error"} ${response.status}`));
-            } else if (response.status > 399) {
-                sendNotification(formatError(`${response.statusText || "Request error"} ${response.status}`));
+            if (result.status > 499) {
+                sendNotification(formatError(`${result.statusText || "Server error"} ${result.status}`));
+            } else if (result.status > 399) {
+                sendNotification(formatError(`${result.statusText || "Request error"} ${result.status}`));
             }
         }
 
         return result;
     }
 
-    async get<T = unknown>(
-        url: string,
-        headers: Record<string, string> = {},
-        options: ApiOptions = {}
-    ): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "get", headers, options });
+    async get<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "get", options });
     }
 
-    async post<T = unknown>(
-        url: string,
-        body: BodyInit,
-        headers: Record<string, string> = {},
-        options: ApiOptions = {}
-    ): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "post", body, headers, options });
+    async post<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "post", body, options });
     }
 
     private prepareRequest({

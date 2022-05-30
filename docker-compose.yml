@@ -42,8 +42,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: celery --app app.tasks worker --beat --loglevel=WARNING -Q main-queue -E -c 1 -s /tmp/celerybeat-schedule
-    tty: true
+    command: celery --app app.tasks worker --beat --loglevel=ERROR -Q main-queue -E -c 1 -s /tmp/celerybeat-schedule
     volumes:
       - ./backend:/app/:cached
     depends_on:
@@ -57,7 +56,6 @@ services:
     tty: true
     volumes:
       - ./backend:/app/:cached
-      - ./.docker/.ipython:/root/.ipython:cached
     ports:
       - 8888:8888
     environment:
@@ -76,6 +74,8 @@ services:
       context: frontend
       dockerfile: Dockerfile
     stdin_open: true
+    ports:
+      - 3000:3000
     volumes:
       - './frontend:/app:cached'
       - './frontend/node_modules:/app/node_modules:cached'
@@ -84,7 +84,7 @@ services:
         # REACT_APP_API_BASE_PATH: "http://localhost:8000/api"
         REACT_APP_API_BASE_PATH: "/api"
         REACT_APP_MODE: "development"
-    command: bash app/run.sh start
+    command: bash /app/run.sh start
 
 volumes:
   db-data:

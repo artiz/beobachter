@@ -6,18 +6,27 @@ import MetricsIndicator from "components/metrics/MetricsIndicator";
 import MetricsChart from "components/metrics/MetricsChart";
 import { APIClient } from "core/api/client";
 
+type RawMetrics = [number, string][];
+
 const Monitoring = () => {
     const client = new APIClient();
     const [metrics, metricsLoading] = usePerfMetricsState();
-    const [metricsHistory, setMetricsHistory] = useState<IPerfMetrics[]>([]);
+    const [cpuHistory, setCpuHistory] = useState<IPerfMetrics[]>([]);
+    const [vmHistory, setVmHistory] = useState<IPerfMetrics[]>([]);
 
     useEffect(() => {
-        client.get<IPerfMetrics[]>("/system_metrics").then((res) => setMetricsHistory(res.data));
+        client
+            .get<RawMetrics>("/system_metrics/cpu_p", { skipErrorCheck: true })
+            .then((res) => setCpuHistory(parseMetrics(res.data, "cpu_p")));
+        client
+            .get<RawMetrics>("/system_metrics/vm_p", { skipErrorCheck: true })
+            .then((res) => setVmHistory(parseMetrics(res.data, "vm_p")));
     }, []);
 
     useEffect(() => {
         if (metrics) {
-            setMetricsHistory([...metricsHistory, metrics]);
+            setCpuHistory([...cpuHistory, { cpu_p: metrics.cpu_p, ts: metrics.ts }]);
+            setVmHistory([...vmHistory, { vm_p: metrics.vm_p, ts: metrics.ts }]);
         }
     }, [metrics]);
 
@@ -47,7 +56,7 @@ const Monitoring = () => {
                 <Widget title="CPU" size="1/2" icon="microchip" iconColor="green">
                     <div className="h-[300px] text-xs w-full">
                         <MetricsChart
-                            data={metricsHistory}
+                            data={cpuHistory}
                             title="CPU %"
                             field="cpu_p"
                             lineColor="#10b981"
@@ -59,7 +68,7 @@ const Monitoring = () => {
                 <Widget title="Virtual Memory" size="1/2" icon="memory" iconColor="red">
                     <div className="h-[300px] text-xs">
                         <MetricsChart
-                            data={metricsHistory}
+                            data={vmHistory}
                             title="VM %"
                             field="vm_p"
                             lineColor="#ef4444"
@@ -73,3 +82,14 @@ const Monitoring = () => {
 };
 
 export default Monitoring;
+
+function parseMetrics(data: RawMetrics, metric: "cpu_p" | "vm_p"): IPerfMetrics[] {
+    if (!data) {
+        return [];
+    }
+
+    return data.map(([ts, value]) => ({
+        ts: ts,
+        [metric]: parseFloat(value).toPrecision(2),
+    }));
+}
