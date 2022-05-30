@@ -12,9 +12,14 @@ on:
 
   workflow_dispatch:
 
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  checkout_and_build:
+  build:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -33,16 +38,9 @@ jobs:
           args: './backend --check --line-length 120'
       - name: Build the stack
         run: docker-compose build
-      # - name: Run the stack
-      #   run: docker-compose up -d
-  test_backend:
-    needs: checkout_and_build
-    steps:
       - name: Run backend UT
         run: docker-compose run backend pytest -p no:cacheprovider
-      
-  test_frontend:
-    needs: checkout_and_build
-    steps:
       - name: Run frontend UT
         run: docker-compose run frontend npm run test:all
+      # - name: Run the stack
+      #   run: docker-compose up -d
