@@ -14,7 +14,7 @@ import { useAuthStatus } from "core/hooks/useAuthStatus";
 import { useAppNotificationListener } from "core/hooks/useAppNotifier";
 import "App.css";
 import Alert from "components/state/Alert";
-import { ThailwindColor } from "ui/thailwind";
+import { ThailwindColorStr } from "ui/thailwind";
 // import LoadingCircle from "components/state/LoadingCircle";
 function App() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,7 +22,7 @@ function App() {
     const [notification, setNotification] = useAppNotificationListener();
 
     const closeAlert = useCallback(() => setNotification(undefined), [setNotification]);
-    const alertColor = useMemo<ThailwindColor>(
+    const alertColor = useMemo<ThailwindColorStr>(
         () => (notification?.type?.includes("error") ? "red" : notification?.type === "warning" ? "orange" : "emerald"),
         [notification]
     );

@@ -1,16 +1,14 @@
-import React, { Children } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { ThailwindColor } from "ui/thailwind";
-import { IPerfMetrics } from "core/metrics/usePerfMetricsState";
+import { ThailwindColorStr } from "ui/thailwind";
 import LoadingCircle from "components/state/LoadingCircle";
 
 interface IProps {
     title: string;
-    color?: ThailwindColor;
+    color?: ThailwindColorStr;
     icon?: IconName;
-    iconColor?: ThailwindColor;
+    iconColor?: ThailwindColorStr;
     padding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
 
     value?: string | number | undefined;

@@ -37,17 +37,7 @@ function Header() {
                     <div className="w-1/2 pr-0">
                         <div className="text-sm flex relative inline-block float-right">
                             {user ? (
-                                <>
-                                    <UserMenu />
-                                    <div className="block lg:hidden pr-4">
-                                        <button
-                                            onClick={toggleNav}
-                                            className="flex items-center px-3 py-2 border rounded text-zinc-500 border-zinc-600 hover:text-zinc-100 hover:border-zinc-500 appearance-none"
-                                        >
-                                            <Icon icon={["fas", "bars"]} />
-                                        </button>
-                                    </div>
-                                </>
+                                <UserMenu />
                             ) : userLoading ? (
                                 <span>&nbsp;</span>
                             ) : (
@@ -66,6 +56,16 @@ function Header() {
                                     </Link>
                                 </>
                             )}
+                            <div className="block lg:hidden pr-4 ml-2">
+                                <button
+                                    onClick={toggleNav}
+                                    className={`flex items-center px-3 py-2 border rounded text-zinc-500 border-zinc-600 ${
+                                        showNav ? "bg-zinc-600" : ""
+                                    } hover:text-zinc-100 hover:border-zinc-500`}
+                                >
+                                    <Icon icon={["fas", "bars"]} />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -87,7 +87,7 @@ function Header() {
                             <input
                                 type="search"
                                 placeholder="Search"
-                                className="w-full bg-zinc-900 text-sm text-zinc-400 transition border border-zinc-800 focus:outline-none focus:border-zinc-600 rounded py-1 px-2 pl-10 appearance-none leading-normal"
+                                className="w-full bg-zinc-900 text-sm text-zinc-400 transition border border-zinc-800 outline-none focus:outline rounded py-1 px-2 pl-10"
                             />
                             <div className="absolute search-icon" style={{ top: "0.375rem", left: "1.75rem" }}>
                                 <svg

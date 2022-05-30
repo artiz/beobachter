@@ -95,7 +95,7 @@ const Login = () => {
                             setter={setPassword}
                         ></Input>
 
-                        <Button type="submit" isDefault={true} loading={loading} disabled={!inputValid} inline={true}>
+                        <Button type="submit" loading={loading} disabled={!inputValid} inline={false}>
                             Login
                         </Button>
                     </form>

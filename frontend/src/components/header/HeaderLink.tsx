@@ -2,12 +2,12 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { ThailwindColor } from "ui/thailwind";
+import { ThailwindColorStr } from "ui/thailwind";
 
 interface IProps {
     path: string;
     title: string;
-    color?: ThailwindColor;
+    color?: ThailwindColorStr;
     icon?: IconName;
 }
 

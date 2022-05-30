@@ -1,22 +1,25 @@
-export type ThailwindColor =
-    | "slate"
-    | "gray"
-    | "zinc"
-    | "red"
-    | "orange"
-    | "amber"
-    | "yellow"
-    | "green"
-    | "emerald"
-    | "teal"
-    | "cyan"
-    | "sky"
-    | "sky"
-    | "blue"
-    | "indigo"
-    | "purple"
-    | "pink"
-    | "rose";
+export enum ThailwindColor {
+    slate,
+    gray,
+    zinc,
+    stone,
+    red,
+    orange,
+    amber,
+    yellow,
+    green,
+    emerald,
+    teal,
+    cyan,
+    sky,
+    blue,
+    indigo,
+    purple,
+    pink,
+    rose,
+}
+
+export type ThailwindColorStr = keyof typeof ThailwindColor;
 
 export const ChartColors = [
     "#10b981",

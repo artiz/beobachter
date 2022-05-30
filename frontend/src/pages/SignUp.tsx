@@ -19,7 +19,7 @@ const SignUp = () => {
                     <form onSubmit={handleSubmit} className="w-1/2">
                         <h1 className="font-bold text-emerald-700 text-2xl mb-5">SignUp</h1>
 
-                        <Button type="submit" isDefault={true} inline={true}>
+                        <Button type="submit" inline={false}>
                             Submit
                         </Button>
                     </form>

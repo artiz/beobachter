@@ -1,20 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LoadingCircle from "components/state/LoadingCircle";
-import { ThailwindColor } from "ui/thailwind";
+import { ThailwindColorStr } from "ui/thailwind";
 
 interface ButtonProps {
     title?: string;
-    color?: ThailwindColor;
+    color?: ThailwindColorStr;
     loading?: boolean;
     groupCls?: string;
-    isDefault?: boolean;
+    outline?: boolean;
     disabled?: boolean;
     fullWidth?: boolean;
     inline?: boolean;
     useRouter?: boolean;
     type?: "submit" | "reset" | "button";
     href?: string; // render as link
+    className?: string;
     children?: React.ReactNode;
     onClick?: React.MouseEventHandler<HTMLButtonElement> | React.MouseEventHandler<HTMLAnchorElement>;
 }
@@ -23,25 +24,27 @@ function Button({
     loading = false,
     title,
     color = "emerald",
-    disabled: disabled = false,
-    isDefault = false,
+    disabled = false,
+    outline = false,
+    inline = true,
     fullWidth = false,
     useRouter = false,
-    inline = false,
     type = "button",
+    className = "",
     children,
     href,
     onClick,
 }: ButtonProps) {
-    const theming = isDefault
-        ? `bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-white`
-        : `bg-transparent hover:bg-${color}-500 text-${color}-500 hover:text-white border border-${color}-500 hover:border-transparent active:bg-${color}-700`;
+    const theming = outline
+        ? `bg-transparent hover:bg-${color}-500 text-${color}-500 hover:text-${color}-100 border border-${color}-500 hover:border-transparent active:bg-${color}-700`
+        : `border bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-${color}-100`;
 
     const content = children ?? title;
     const buttonCls =
-        "justify-center cursor-pointer font-sembold py-2 px-4 rounded transition ease-in-out delay-10 " +
+        className +
+        " justify-center cursor-pointer m-0 py-2 px-4 rounded transition ease-in-out delay-10 " +
         theming +
-        (inline ? " m-0 " : " mb-4 mr-4 ") +
+        (inline ? " m-0 mr-2 " : " mb-4 mr-4 ") +
         (fullWidth ? " w-full " : " min-w-[6rem] ") +
         (disabled ? " opacity-50 cursor-not-allowed " : "");
 
@@ -64,7 +67,7 @@ function Button({
             type={type}
             onClick={onClick as React.MouseEventHandler<HTMLButtonElement>}
         >
-            {loading && <LoadingCircle color={isDefault ? "text-white" : `text-${color}-700`} />}
+            {loading && <LoadingCircle color={outline ? `text-${color}-700` : `text-${color}-100`} />}
             {content}
         </button>
     );

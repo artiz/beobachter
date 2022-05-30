@@ -1,10 +1,10 @@
 import React from "react";
-import { ThailwindColor } from "ui/thailwind";
+import { ThailwindColorStr } from "ui/thailwind";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 
 interface AlertProps {
     title?: string;
-    color?: ThailwindColor;
+    color?: ThailwindColorStr;
     text: string;
     baseClass?: string;
     onClose?: () => void;
@@ -25,7 +25,7 @@ function Alert({ title, text, onClose, baseClass = "", color = "yellow" }: Alert
                 {onClose && (
                     <button
                         onClick={onClose}
-                        className="absolute bg-transparent text-2xl font-semibold leading-none cursor-pointer right-0 top-0 outline-none focus:outline-none"
+                        className="absolute bg-transparent text-2xl font-semibold leading-none cursor-pointer right-0 top-0 outline-none focus:outline"
                     >
                         <span>×</span>
                     </button>

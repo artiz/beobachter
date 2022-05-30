@@ -1,25 +1,33 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { forwardRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface LinkMenuItemProps {
     to: string;
-    wrap?: boolean;
-    onClick?: () => void;
     children?: React.ReactNode;
+    className?: string;
+    onClick?: (evt: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-function LinkMenuItem({ to, wrap = false, onClick, children }: LinkMenuItemProps) {
-    const link = (
-        <Link
-            to={to}
-            onClick={onClick}
-            className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
-        >
-            {children}
-        </Link>
-    );
+export const LinkMenuItem = forwardRef<HTMLButtonElement, LinkMenuItemProps>(
+    ({ to, className = "", onClick, children }, ref) => {
+        const cls = `${className} no-underline`;
+        const navigate = useNavigate();
 
-    return wrap ? <li>{link}</li> : link;
-}
+        const handleClick = useCallback(
+            (evt: React.MouseEvent<HTMLButtonElement>) => {
+                onClick?.(evt);
+                navigate(to);
+            },
+            [to, onClick]
+        );
 
+        return (
+            <button onClick={handleClick} className={cls} ref={ref}>
+                {children}
+            </button>
+        );
+    }
+);
+
+LinkMenuItem.displayName = "LinkMenuItem";
 export default LinkMenuItem;
