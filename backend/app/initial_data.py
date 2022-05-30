@@ -6,10 +6,10 @@ from app.core.schemas.schemas import UserCreate
 from app.db.session import SessionLocal
 
 
-def init() -> None:
+def create_superuser() -> None:
     db = SessionLocal()
 
-    create_user(
+    return create_user(
         db,
         UserCreate(
             email="admin@fastapi-react-project.com",
@@ -22,6 +22,8 @@ def init() -> None:
 
 
 if __name__ == "__main__":
-    print("Creating superuser admin@fastapi-react-project.com")
-    init()
-    print("Superuser created")
+    try:
+        user = create_superuser()
+        print(f"Superuser {user.email} created")
+    except Exception as e:
+        print(f"Superuser creation failed: {e}")

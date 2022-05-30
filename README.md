@@ -35,14 +35,11 @@ Starting the project with hot-reloading enabled
 (the first time it will take a while):
 
 ```bash
+docker-compose run backend alembic upgrade head
+docker-compose run backend python app/initial_data.py
 docker-compose up -d
 ```
 
-To run the alembic migrations (for the users table):
-
-```bash
-docker-compose run --rm backend alembic upgrade head
-```
 
 And navigate to http://localhost:8000
 
@@ -66,21 +63,14 @@ docker-compose restart
 ### Bringing containers down:
 
 ```
-docker-compose down
+docker-compose down --remove-orphans
 ```
-
-### Frontend Development
-
-Alternatively to running inside docker, it can sometimes be easier
-to use npm directly for quicker reloading. To run using npm:
+### Force stop and remove all containers:
 
 ```
-cd frontend
-npm install
-npm start
+docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
 ```
 
-This should redirect you to http://localhost:3000
 
 ### Frontend Tests
 
@@ -92,10 +82,11 @@ npm test
 
 ## Migrations
 
-Migrations are run using alembic. To run all migrations:
+Migrations are run using alembic. To run all migrations and load init data:
 
 ```
-docker-compose run --rm backend alembic upgrade head
+docker-compose run backend alembic upgrade head
+docker-compose run backend python app/initial_data.py
 ```
 
 To create a new migration:
@@ -126,7 +117,7 @@ any arguments to pytest can also be passed after this command
 ### Frontend Tests
 
 ```
-docker-compose run frontend test
+docker-compose run frontend npm run test:all
 ```
 
 This is the same as running npm test from within the frontend directory
