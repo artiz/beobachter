@@ -9,8 +9,8 @@ RUN npm install
 WORKDIR /app
 ADD . /app
 
-EXPOSE 8000
+# hot reload
 EXPOSE 35729
+# web
+EXPOSE 3000 
 
-ENTRYPOINT ["/bin/bash", "/app/run.sh"]
-CMD ["start"]

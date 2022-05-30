@@ -14,26 +14,35 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-   build_backend:
-    # The type of runner that the job will run on
+  checkout_and_build:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Install dependencies
-        run: |
-          sudo python -m pip install --upgrade pip
-          pip install --no-cache-dir -r ./backend/requirements.txt
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: List files in the repository
+        run: ls ${{ github.workspace }}
       - name: Black Code Formatter
         uses: lgeiger/black-action@master
         with:
           args: './backend --check --line-length 120'
-      - name: Run tests
-        run: |
-          sudo ./scripts/test_backend.sh
+      - name: Build the stack
+        run: docker-compose build
+      # - name: Run the stack
+      #   run: docker-compose up -d
+  test_backend:
+    needs: checkout_and_build
+    steps:
+      - name: Run backend UT
+        run: docker-compose run backend pytest -p no:cacheprovider
+      
+  test_frontend:
+    needs: checkout_and_build
+    steps:
+      - name: Run frontend UT
+        run: docker-compose run frontend npm run test:all

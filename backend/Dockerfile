@@ -32,3 +32,5 @@ RUN chown -R app:app .
 # change to the app user
 # Switch to a non-root user, which is recommended by Heroku.
 USER app
+
+EXPOSE 8000

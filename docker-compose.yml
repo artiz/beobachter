@@ -60,20 +60,18 @@ services:
       - ./.docker/.ipython:/root/.ipython:cached
     ports:
       - 8888:8888
-    command: sh app/run.sh
     environment:
       PYTHONPATH: .
       DATABASE_URI: "postgresql://postgres:password@postgres:5432/postgres"
       CELERY_BROKER: "redis://redis:6379/0"
       PORT: 8888
       LOG_LEVEL: "DEBUG"
+    command: bash app/run.sh
     depends_on:
       - postgres
 
   frontend:
     container_name: beo_frontend
-    ports:
-      - 3000:3000
     build:
       context: frontend
       dockerfile: Dockerfile
@@ -86,7 +84,7 @@ services:
         # REACT_APP_API_BASE_PATH: "http://localhost:8000/api"
         REACT_APP_API_BASE_PATH: "/api"
         REACT_APP_MODE: "development"
-
+    command: bash app/run.sh start
 
 volumes:
   db-data:

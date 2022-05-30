@@ -1,11 +1,22 @@
-# Beobachter
+# Beobachter [FastAPI + React]
+[![build](https://github.com/artiz/beobachter/actions/workflows/build.yml/badge.svg)](https://github.com/artiz/beobachter/actions/workflows/build.yml)
+
+<div>
+    <img src="assets/fastapi-logo.png" alt="fastapi-logo" height="64" />
+    <img src="assets/postgres-logo.png" alt="react-logo" height="64" /> 
+    <img src="assets/sql-alchemy-logo.png" alt="sql-alchemy" height="64" />
+    <img src="assets/react-logo.png" alt="react-logo" height="64" />
+    <img src="assets/typescript-logo.png" alt="react-logo" height="64" /> 
+</div>
+
+--------------------------------------------------------------------------------------------------
 
 Backend/scripts based on [`cookiecutter fastapi-react`](https://github.com/Buuntu/fastapi-react) 
 
 
 ## Features
 
-- **FastAPI** with Python 3.8
+- **FastAPI** with Python 3.9
 - **React 17**
 - create-react-app with Typescript
 - Postgres

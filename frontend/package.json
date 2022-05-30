@@ -53,6 +53,7 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
+        "test:all": "react-scripts test --watchAll=false",
         "eject": "react-scripts eject",
         "build:thailwind": "node ./scripts/build-thailwind-colors.js && node ./scripts/build-thailwind-widths.js"
     },
