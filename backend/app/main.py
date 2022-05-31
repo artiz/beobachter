@@ -12,6 +12,7 @@ from app.db.session import SessionLocal
 from app.core.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.core import global_app, util
+from app.core.middleware.logging import RequestLogMiddleware
 
 log = util.init_logger("app")
 
@@ -58,27 +59,6 @@ async def app_shutdown():
 #     process_time = time.time() - start_time
 #     response.headers["X-Process-Time"] = str(process_time)
 #     return response
-
-from starlette.types import ASGIApp, Message, Receive, Scope, Send
-
-# TODO: move to middlewares
-class RequestLogMiddleware:
-    def __init__(self, app):
-        self.app = app
-
-    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] not in ["http", "websocket"]:
-            await self.app(scope, receive, send)
-            return
-
-        log.info(
-            "{} {} {}".format(
-                scope["type"],
-                scope.get("method", "-"),
-                scope["path"],
-            ),
-        )
-        await self.app(scope, receive, send)
 
 
 app.add_middleware(RequestLogMiddleware)
