@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
 
     DATABASE_URI: Optional[str] = "sqlite:///example.db"
+    DATABASE_POOL_SIZE: int = 100
+    DATABASE_POOL_TIMEOUT: int = 10
 
     # Web
     PORT: int = 8888
