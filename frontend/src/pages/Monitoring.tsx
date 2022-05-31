@@ -84,7 +84,7 @@ const Monitoring = () => {
 export default Monitoring;
 
 function parseMetrics(data: RawMetrics, metric: "cpu_p" | "vm_p"): IPerfMetrics[] {
-    if (!data) {
+    if (!Array.isArray(data)) {
         return [];
     }
 

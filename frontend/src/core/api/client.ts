@@ -10,6 +10,14 @@ interface ApiTokenResponse {
 
 export const API_TOKEN = "auth_token";
 
+export function isTokenNotExpired(token: JwtPayload) {
+    if (!token.exp) {
+        return;
+    }
+
+    return moment.unix(token.exp).isAfter(moment.utc());
+}
+
 export class AuthenticationError extends Error {
     code: number;
 
@@ -172,13 +180,10 @@ export class APIClient {
 
         if (authToken) {
             const decodedToken = jwtDecode<JwtPayload>(authToken);
-            if (decodedToken.exp) {
-                const isTokenValid = moment.unix(decodedToken.exp).isAfter(moment.utc());
-                if (isTokenValid) {
-                    request.headers["Authorization"] = `bearer ${authToken}`;
-                } else {
-                    throw new AuthTokenExpiredError("Login session has expired");
-                }
+            if (isTokenNotExpired(decodedToken)) {
+                request.headers["Authorization"] = `bearer ${authToken}`;
+            } else {
+                throw new AuthTokenExpiredError("Login session has expired");
             }
         }
 

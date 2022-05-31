@@ -1,11 +1,12 @@
 import * as gravatar from "gravatar";
+import { JwtPayload } from "jwt-decode";
 
-export interface JwtUser {
-    sub: string; // user.email,
-    uid: string; // id,
-    fn: string; // first_name,
-    ln: string; // last_name,
-    permissions: string;
+export class JwtUser implements JwtPayload {
+    sub?: string; // user.email,
+    uid?: string; // id,
+    fn?: string; // first_name,
+    ln?: string; // last_name,
+    permissions?: string;
 }
 
 export const PERMISSIONS_SEPARATOR = ",";

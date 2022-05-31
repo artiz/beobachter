@@ -37,12 +37,16 @@ export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
             if (evt.code > 1000) {
                 sendNotification(formatAuthError());
             }
-            setLoading(false);
+            if (websocket.current) {
+                setLoading(false);
+            }
         };
 
         ws.onopen = () => {
             clearTimeout(timeout);
-            setLoading(false);
+            if (websocket.current) {
+                setLoading(false);
+            }
         };
     }, [setLoading]);
 
@@ -51,7 +55,11 @@ export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
 
         return () => {
             clearTimeout(timeout);
-            websocket?.current?.close(1000);
+            const ws = websocket.current;
+            websocket.current = undefined;
+            if (ws) {
+                ws.close(1000);
+            }
         };
     }, [websocket]);
 

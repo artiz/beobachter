@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { API_TOKEN } from "core/api/client";
+import { API_TOKEN, isTokenNotExpired } from "core/api/client";
 import { User, JwtUser } from "core/models/user";
 import jwtDecode from "jwt-decode";
 import { useAppNotifier, useAppNotificationListener, formatError } from "./useAppNotifier";
@@ -15,8 +15,10 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
         if (token) {
             try {
                 const jwtUser = jwtDecode<JwtUser>(token);
-                const user = User.fromJwt(jwtUser);
-                setUser(user);
+                if (isTokenNotExpired(jwtUser)) {
+                    const user = User.fromJwt(jwtUser);
+                    setUser(user);
+                }
             } catch (e) {
                 if (e instanceof Error) {
                     notify(
