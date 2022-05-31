@@ -65,10 +65,10 @@ const Home = () => {
 
                 <Widget title="UI Components" size="3/4" color="zinc">
                     <section className="p-2 border border-indigo-200">
-                        Dropdown: {/* TODO: add icon support */}
+                        Dropdown:{" "}
                         <Menu label="Edit" color="slate" hovercolor="emerald">
-                            <MenuItem label="Undo" />
-                            <MenuItem label="Redo" />
+                            <MenuItem label="Undo" icon="undo" />
+                            <MenuItem label="Redo" icon="redo" />
                             <MenuItem label="Cut" disabled />
                             <MenuSeparator />
                             <Menu label="Copy as">
