@@ -42,7 +42,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: celery --app app.tasks worker --beat --loglevel=ERROR -Q main-queue -E -c 1 -s /tmp/celerybeat-schedule
+    command: celery --app app.tasks worker --beat --loglevel=WARNING -Q main-queue -E -s /tmp/celerybeat-schedule
     volumes:
       - ./backend:/app/:cached
     depends_on:

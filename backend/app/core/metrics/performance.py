@@ -17,9 +17,7 @@ DAY = 24 * HOUR
 
 class PerfMetricsLoader:
     def __init__(self) -> None:
-        pass
-        # TODO: get logger working
-        # self.logger = get_task_logger("PerfMetricsLoader")
+        self.logger = get_task_logger("PerfMetricsLoader")
 
     def init(self) -> None:
         self.r = redis.Redis.from_url(settings.REDIS_URI)
@@ -29,12 +27,13 @@ class PerfMetricsLoader:
         for metric in PerfMetrics.Keys:
             key = settings.PERF_METRICS_KEY_PREFIX + metric
             labels = {"metric": metric, "type": "performance"}
+            duplicate_policy = "last"
             if not self.r.exists(key):
-                self.ts.create(key, labels=labels, duplicate_policy="last", retention_msecs=HOUR)
+                self.ts.create(key, labels=labels, duplicate_policy=duplicate_policy, retention_msecs=HOUR)
             if not self.r.exists(key + "_min"):
-                self.ts.create(key + "_min", labels=labels, duplicate_policy="last", retention_msecs=DAY)
+                self.ts.create(key + "_min", labels=labels, duplicate_policy=duplicate_policy, retention_msecs=DAY)
             if not self.r.exists(key + "_hour"):
-                self.ts.create(key + "_hour", labels=labels, duplicate_policy="last")
+                self.ts.create(key + "_hour", labels=labels, duplicate_policy=duplicate_policy)
 
             rules = self.ts.info(key).rules
             #  [[b'perf_data_cpu_p_min', 60000, b'AVG'], [b'perf_data_cpu_p_hour', 3600000, b'AVG']]
