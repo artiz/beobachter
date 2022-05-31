@@ -6,6 +6,8 @@ from app.core.config import settings
 
 engine = create_engine(
     settings.DATABASE_URI,
+    pool_timeout=settings.DATABASE_POOL_TIMEOUT,
+    pool_size=settings.DATABASE_POOL_SIZE,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
