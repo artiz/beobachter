@@ -27,6 +27,36 @@ Backend/scripts based on [`cookiecutter fastapi-react`](https://github.com/Buunt
 - Docker compose for easier development
 - Nginx as a reverse proxy to allow backend and frontend on the same port
 
+## Async SQLAlchemy
+
+Parallel database queries with synchronous access
+```
+➜  ~ wrk -c30 -t3 -d10s  -H "Authorization: bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhcnRlbS5rdXN0aWtvdkBnbWFpbC5jb20iLCJ1aWQiOjUsImZuIjpudWxsLCJsbiI6bnVsbCwicGVybWlzc2lvbnMiOiJ1c2VyIiwiZXhwIjoxNjU0MDIxODg2fQ.439CjqvKtBMvIXBEmH0FLW98Te51ur-VBlTsaS7AkhI" http://localhost:8888/api/users/me  --timeout 5
+Running 10s test @ http://localhost:8888/api/users/me
+  3 threads and 30 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    49.86ms   23.51ms 167.93ms   67.88%
+    Req/Sec   201.13     28.65   343.00     71.00%
+  6013 requests in 10.01s, 1.18MB read
+Requests/sec:    600.77
+Transfer/sec:    121.03KB
+```
+
+Parallel database queries with asynchronous access
+
+```
+ wrk -c500 -t25 -d10s   -H "Authorization: bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBmYXN0YXBpLXJlYWN0LXByb2plY3QuY29tIiwidWlkIjoxLCJmbiI6IkFkbWluIiwibG4iOm51bGwsInBlcm1pc3Npb25zIjoiYWRtaW4iLCJleHAiOjE2NTQwMzQxOTd9.ivCnw0uwce81JdxV7ZHMtl38jVaHUIoD2G95791P634"  http://localhost:8888/api/users/me
+Running 10s test @ http://localhost:8888/api/users/me
+  25 threads and 500 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   585.91ms  509.32ms   1.99s    79.50%
+    Req/Sec    30.16     17.33   160.00     61.57%
+  7098 requests in 10.07s, 1.59MB read
+  Socket errors: connect 0, read 0, write 0, timeout 316
+Requests/sec:    704.59
+Transfer/sec:    161.25KB
+```
+
 ## Development
 
 The only dependencies for this project should be docker and docker-compose.
@@ -41,7 +71,6 @@ docker-compose run backend alembic upgrade head
 docker-compose run backend python app/initial_data.py
 docker-compose up -d
 ```
-
 
 And navigate to http://localhost:8000
 
@@ -72,7 +101,6 @@ docker-compose down --remove-orphans
 ```
 docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
 ```
-
 
 ### Frontend Tests
 

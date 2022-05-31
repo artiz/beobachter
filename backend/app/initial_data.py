@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
-from app.db.session import get_db
+import asyncio
 from app.db.crud import create_user
 from app.core.schemas.schemas import UserCreate
-from app.db.session import SessionLocal
+from app.db.session import session
 
 
-def create_superuser() -> None:
-    db = SessionLocal()
-
-    return create_user(
+async def create_superuser(db) -> None:
+    await create_user(
         db,
         UserCreate(
-            email="admin@fastapi-react-project.com",
+            email="admin5@fastapi-react-project.com",
             password="password",
             first_name="Admin",
             is_active=True,
@@ -20,10 +18,22 @@ def create_superuser() -> None:
         ),
     )
 
+    await db.close()
 
-if __name__ == "__main__":
+
+async def init():
+    db = session()
+    db.begin()
+
     try:
-        user = create_superuser()
+        user = await create_superuser(db)
         print(f"Superuser {user.email} created")
     except Exception as e:
-        print(f"Superuser creation failed: {e}")
+        print("Superuser creation failed: ", e)
+
+    await db.close()
+
+
+if __name__ == "__main__":
+    # try:
+    user = asyncio.run(init())

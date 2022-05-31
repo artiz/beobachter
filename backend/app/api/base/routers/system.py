@@ -2,7 +2,7 @@ from fastapi import APIRouter, WebSocket, Depends, Response, HTTPException, stat
 from typing import List, Optional
 import asyncio
 
-from app.core.auth import (
+from app.core.net.auth import (
     check_current_active_user,
     get_current_active_user,
     get_jwt_token_decoder,
@@ -12,7 +12,7 @@ from app.core.net.websocket import ConnectionManager
 from app.api.dependencies.management import get_system_metrics_manager
 from app.api.dependencies.common import get_redis, get_log
 from app.core import util
-from app.db import session
+from app.db.session import get_db
 from app.core.schemas.metrics import PerfMetrics
 
 system_router = r = APIRouter()
@@ -23,7 +23,7 @@ async def ws_system_metrics(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_system_metrics_manager),
     current_user=Depends(check_current_active_user),
-    db=Depends(session.get_db),
+    db=Depends(get_db),
     log=Depends(get_log),
     jwt_checker=Depends(get_jwt_token_decoder),
 ):
@@ -31,7 +31,7 @@ async def ws_system_metrics(
     Websocket channel with system performance data updates
     """
     # manual connection close to avoid pool exhaustion
-    db.close()
+    await db.close()
     if not current_user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="auth_error")
         return
@@ -42,7 +42,11 @@ async def ws_system_metrics(
             if manager.stopped() or not manager.is_connected(sock_id):
                 break
             await asyncio.sleep(0.5)
-            jwt_checker(current_user.token)
+
+            # TODO: complete
+            # user_session = Depends(check_current_active_user)
+            # ... (user, token) = user_session
+            # jwt_checker(token)
     except Exception as ex:
         await log.error(ex)
     finally:
