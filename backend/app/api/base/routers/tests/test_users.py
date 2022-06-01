@@ -1,31 +1,19 @@
 from app.db import models
+from sqlalchemy.future import select
 
 
-def test_get_users(client, test_superuser, superuser_token_headers):
-    response = client.get("/api/users", headers=superuser_token_headers)
+async def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
+    response = await client.delete(f"/api/users/{test_superuser.id}", headers=superuser_token_headers)
     assert response.status_code == 200
-    assert response.json() == [
-        {
-            "id": test_superuser.id,
-            "email": test_superuser.email,
-            "is_active": test_superuser.is_active,
-            "is_superuser": test_superuser.is_superuser,
-        }
-    ]
+    assert (await test_db.execute(select(models.User).filter(models.User.id == test_superuser.id))).all() == []
 
 
-def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
-    response = client.delete(f"/api/users/{test_superuser.id}", headers=superuser_token_headers)
-    assert response.status_code == 200
-    assert test_db.query(models.User).all() == []
-
-
-def test_delete_user_not_found(client, superuser_token_headers):
-    response = client.delete("/api/users/4321", headers=superuser_token_headers)
+async def test_delete_user_not_found(client, superuser_token_headers):
+    response = await client.delete("/api/users/4321", headers=superuser_token_headers)
     assert response.status_code == 404
 
 
-def test_edit_user(client, test_superuser, superuser_token_headers):
+async def test_edit_user(client, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
@@ -35,7 +23,7 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
         "password": "new_password",
     }
 
-    response = client.put(
+    response = await client.put(
         f"/api/users/{test_superuser.id}",
         json=new_user,
         headers=superuser_token_headers,
@@ -46,23 +34,23 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.json() == new_user
 
 
-def test_edit_user_not_found(client, test_db, superuser_token_headers):
+async def test_edit_user_not_found(client, test_db, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
         "is_superuser": False,
         "password": "new_password",
     }
-    response = client.put("/api/users/1234", json=new_user, headers=superuser_token_headers)
+    response = await client.put("/api/users/1234", json=new_user, headers=superuser_token_headers)
     assert response.status_code == 404
 
 
-def test_get_user(
+async def test_get_user(
     client,
     test_user,
     superuser_token_headers,
 ):
-    response = client.get(f"/api/users/{test_user.id}", headers=superuser_token_headers)
+    response = await client.get(f"/api/users/{test_user.id}", headers=superuser_token_headers)
     assert response.status_code == 200
     assert response.json() == {
         "id": test_user.id,
@@ -72,31 +60,31 @@ def test_get_user(
     }
 
 
-def test_user_not_found(client, superuser_token_headers):
-    response = client.get("/api/users/123", headers=superuser_token_headers)
+async def test_user_not_found(client, superuser_token_headers):
+    response = await client.get("/api/users/123", headers=superuser_token_headers)
     assert response.status_code == 404
 
 
-def test_authenticated_user_me(client, user_token_headers):
-    response = client.get("/api/users/me", headers=user_token_headers)
+async def test_authenticated_user_me(client, user_token_headers):
+    response = await client.get("/api/users/me", headers=user_token_headers)
     assert response.status_code == 200
 
 
-def test_unauthenticated_routes(client):
-    response = client.get("/api/users/me")
+async def test_unauthenticated_routes(client):
+    response = await client.get("/api/users/me")
     assert response.status_code == 401
-    response = client.get("/api/users")
+    response = await client.get("/api/users")
     assert response.status_code == 401
-    response = client.get("/api/users/123")
+    response = await client.get("/api/users/123")
     assert response.status_code == 401
-    response = client.put("/api/users/123")
+    response = await client.put("/api/users/123")
     assert response.status_code == 401
-    response = client.delete("/api/users/123")
+    response = await client.delete("/api/users/123")
     assert response.status_code == 401
 
 
-def test_unauthorized_routes(client, user_token_headers):
-    response = client.get("/api/users", headers=user_token_headers)
+async def test_unauthorized_routes(client, user_token_headers):
+    response = await client.get("/api/users", headers=user_token_headers)
     assert response.status_code == 403
-    response = client.get("/api/users/123", headers=user_token_headers)
+    response = await client.get("/api/users/123", headers=user_token_headers)
     assert response.status_code == 403

@@ -10,7 +10,7 @@ perf_metrics_loader = PerfMetricsLoader()
 
 
 @celery_app.task(acks_late=True)
-def example_task(word: str) -> str:
+async def example_task(word: str) -> str:
     return f"test task returns {word}"
 
 
@@ -29,7 +29,7 @@ def setup_periodic_tasks(sender, **kwargs):
         task_log = logging.getLogger("celery.task")
         task_log.addHandler(logging.StreamHandler())
     except Exception as e:
-        print("setup_periodic_tasks, log setup failed", e)
+        print("ERROR: setup_periodic_tasks, log setup failed", e)
 
     try:
         perf_metrics_loader.init()

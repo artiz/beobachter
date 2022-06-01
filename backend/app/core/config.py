@@ -7,11 +7,11 @@ from pytz import VERSION
 class Settings(BaseSettings):
     PROJECT_NAME: str = "beobachter"
     VERSION: str = "0.0.5"
-    LOG_LEVEL: str = "info"
+    LOG_LEVEL: str = "INFO"
 
     DATABASE_URI: Optional[str] = "sqlite:///example.db"
-    DATABASE_POOL_SIZE: int = 100
-    DATABASE_POOL_TIMEOUT: int = 10
+    DATABASE_POOL_SIZE: int = 50
+    DATABASE_POOL_TIMEOUT: int = 15
 
     # Web
     PORT: int = 8888

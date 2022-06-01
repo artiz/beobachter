@@ -1,9 +1,16 @@
 import logging
-import pytest
+import pytest, pytest_asyncio
+import asyncio
+import random, string
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from fastapi.testclient import TestClient
+
+# from fastapi.testclient import TestClient
+from httpx import AsyncClient
 import typing as t
 from unittest.mock import patch
 
@@ -16,46 +23,12 @@ from app.main import app
 from app.core import util
 
 
+def random_char(y):
+    return "".join(random.choice(string.ascii_letters) for x in range(y))
+
+
 def get_test_db_url() -> str:
     return f"{settings.DATABASE_URI}_test"
-
-
-@patch("util.init_logger")
-def test_db(init_logger):
-    init_logger.return_value = logging.getLogger("app")
-
-
-@pytest.fixture
-def test_db():
-    """
-    Modify the db session to automatically roll back after each test.
-    This is to avoid tests affecting the database state of other tests.
-    """
-    # Connect to the test database
-    engine = create_engine(
-        get_test_db_url(),
-    )
-
-    connection = engine.connect()
-    trans = connection.begin()
-
-    # Run a parent transaction that can roll back all changes
-    test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    test_session = test_session_maker()
-    test_session.begin_nested()
-
-    @event.listens_for(test_session, "after_transaction_end")
-    def restart_savepoint(s, transaction):
-        if transaction.nested and not transaction._parent.nested:
-            s.expire_all()
-            s.begin_nested()
-
-    yield test_session
-
-    # Roll back the parent transaction after the test is complete
-    test_session.close()
-    trans.rollback()
-    connection.close()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -64,12 +37,11 @@ def create_test_db():
     Create a test database and use it for the whole test session.
     """
 
-    test_db_url = get_test_db_url()
+    test_db_url = get_test_db_url().replace("+asyncpg", "")
+    if not database_exists(test_db_url):
+        create_database(test_db_url)
 
-    # Create the test database
-    assert not database_exists(test_db_url), "Test database already exists. Aborting tests."
-    create_database(test_db_url)
-    test_engine = create_engine(test_db_url)
+    test_engine = create_engine(test_db_url, echo=False)
     Base.metadata.create_all(test_engine)
 
     # Run the tests
@@ -79,8 +51,29 @@ def create_test_db():
     drop_database(test_db_url)
 
 
-@pytest.fixture
-def client(test_db):
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.get_event_loop()
+    yield loop
+    loop.close()
+
+
+@pytest_asyncio.fixture()
+async def test_db():
+    engine = create_async_engine(get_test_db_url(), future=True)
+    session = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
+    db = session()
+    try:
+        nested = await db.begin_nested()
+        yield db
+    finally:
+        if nested and nested.is_active:
+            await nested.rollback()
+        await db.close()
+
+
+@pytest_asyncio.fixture()
+async def client(test_db):
     """
     Get a TestClient instance that reads/write to the test database.
     """
@@ -90,10 +83,14 @@ def client(test_db):
 
     app.dependency_overrides[get_db] = get_test_db
 
-    yield TestClient(app)
+    client = AsyncClient(app=app, base_url="http://test")
+    try:
+        yield client
+    finally:
+        await client.aclose()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture()
 def test_password() -> str:
     return "securepassword"
 
@@ -105,35 +102,35 @@ def get_password_hash() -> str:
     return "supersecrethash"
 
 
-@pytest.fixture
-def test_user(test_db) -> models.User:
+@pytest_asyncio.fixture()
+async def test_user(test_db: AsyncSession) -> models.User:
     """
     Make a test user in the database
     """
 
     user = models.User(
-        email="fake@email.com",
+        email=random_char(16) + "@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
     )
     test_db.add(user)
-    test_db.commit()
+    await test_db.commit()
     return user
 
 
-@pytest.fixture
-def test_superuser(test_db) -> models.User:
+@pytest_asyncio.fixture()
+async def test_superuser(test_db) -> models.User:
     """
     Superuser for testing
     """
 
     user = models.User(
-        email="fakeadmin@email.com",
+        email=random_char(16) + ".admin@email.com",
         hashed_password=get_password_hash(),
         is_superuser=True,
     )
     test_db.add(user)
-    test_db.commit()
+    await test_db.commit()
     return user
 
 
@@ -141,30 +138,30 @@ def verify_password_mock(first: str, second: str) -> bool:
     return True
 
 
-@pytest.fixture
-def user_token_headers(client: TestClient, test_user, test_password, monkeypatch) -> t.Dict[str, str]:
+@pytest_asyncio.fixture()
+async def user_token_headers(client, test_user, test_password, monkeypatch) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
     login_data = {
         "username": test_user.email,
         "password": test_password,
     }
-    r = client.post("/api/auth/login", data=login_data)
+    r = await client.post("/api/auth/login", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
 
 
-@pytest.fixture
-def superuser_token_headers(client: TestClient, test_superuser, test_password, monkeypatch) -> t.Dict[str, str]:
+@pytest_asyncio.fixture()
+async def superuser_token_headers(client, test_superuser, test_password, monkeypatch) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
     login_data = {
         "username": test_superuser.email,
         "password": test_password,
     }
-    r = client.post("/api/auth/login", data=login_data)
+    r = await client.post("/api/auth/login", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}

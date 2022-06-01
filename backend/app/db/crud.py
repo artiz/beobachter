@@ -1,6 +1,10 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-import typing as t
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.exc import IntegrityError
+
+from typing import List
 
 from . import models
 
@@ -8,23 +12,29 @@ from app.core.schemas import schemas
 from app.core.security import get_password_hash
 
 
-def get_user(db: Session, user_id: int):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
+async def get_user_by_email(db: AsyncSession, email: str) -> schemas.UserBase:
+    iter = await db.execute(select(models.User).filter(models.User.email == email))
+    res = iter.fetchone()
+    return res[0] if res else None
+
+
+async def get_user(db: AsyncSession, user_id: int):
+    iter = await db.execute(select(models.User).filter(models.User.id == user_id))
+    res = iter.fetchone()
+    if not res:
         raise HTTPException(status_code=404, detail="User not found")
-    return user
+    return res[0]
 
 
-# TODO: P1 - refactor with async
-def get_user_by_email(db: Session, email: str) -> schemas.UserBase:
-    return db.query(models.User).filter(models.User.email == email).first()
+async def get_users(db: AsyncSession, skip: int = 0, limit: int = 0) -> List[schemas.UserOut]:
+    stmt = select(models.User).offset(skip).order_by(models.User.id)
+    if limit > 0:
+        stmt.limit(limit)
+    r = await db.execute(stmt)
+    return [r[0] for r in r.fetchall()]
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[schemas.UserOut]:
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
-def create_user(db: Session, user: schemas.UserCreate):
+async def create_user(db: AsyncSession, user: schemas.UserCreate):
     hashed_password = get_password_hash(user.password)
 
     db_user = models.User(
@@ -35,23 +45,31 @@ def create_user(db: Session, user: schemas.UserCreate):
         is_superuser=user.is_superuser,
         hashed_password=hashed_password,
     )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+
+    try:
+        db.add(db_user)
+        await db.commit()
+    except IntegrityError as ex:
+        detail = ex.detail
+        if not detail and ex.orig:
+            detail = str(ex.orig)
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=detail)
+
+    await db.refresh(db_user)
     return db_user
 
 
-def delete_user(db: Session, user_id: int):
-    user = get_user(db, user_id)
+async def delete_user(db: AsyncSession, user_id: int):
+    user = await get_user(db, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
-    db.delete(user)
-    db.commit()
+    await db.delete(user)
+    await db.commit()
     return user
 
 
-def edit_user(db: Session, user_id: int, user: schemas.UserEdit) -> schemas.User:
-    db_user = get_user(db, user_id)
+async def edit_user(db: AsyncSession, user_id: int, user: schemas.UserEdit) -> schemas.User:
+    db_user = await get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     update_data = user.dict(exclude_unset=True)
@@ -64,6 +82,6 @@ def edit_user(db: Session, user_id: int, user: schemas.UserEdit) -> schemas.User
         setattr(db_user, key, value)
 
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user

@@ -8,13 +8,11 @@ from app.api.base.routers.users import users_router
 from app.api.base.routers.auth import auth_router
 from app.api.base.routers.system import system_router
 from app.core.config import settings
-from app.db.session import SessionLocal
-from app.core.auth import get_current_active_user
+from app.db.session import session
+from app.core.net.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.core import global_app, util
 from app.core.middleware.logging import RequestLogMiddleware
-
-log = util.init_logger("app")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -37,6 +35,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 
 startup_task = None
+log = util.init_logger("app")
 
 
 @app.on_event("startup")
