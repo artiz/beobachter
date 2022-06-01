@@ -87,7 +87,7 @@ function Header() {
                             <input
                                 type="search"
                                 placeholder="Search"
-                                className="w-full bg-zinc-900 text-sm text-zinc-400 transition border border-zinc-800 outline-none focus:outline rounded py-1 px-2 pl-10"
+                                className="w-full bg-zinc-900 text-sm text-zinc-400 placeholder-zinc-600 transition border border-zinc-800 outline-none focus:outline rounded py-1 px-2 pl-10"
                             />
                             <div className="absolute search-icon" style={{ top: "0.375rem", left: "1.75rem" }}>
                                 <svg

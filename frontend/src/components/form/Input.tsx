@@ -16,7 +16,7 @@ const Input = React.forwardRef((props: InputProps, ref: React.ForwardedRef<HTMLI
     const { label, name, error, value, placeholder, groupCls = "mb-2", setter, onChange, type = "text" } = props;
     const inputCls =
         "shadow appearance-none border rounded w-full " +
-        " py-2 px-3 text-zinc-700 mb-3 leading-tight outline-none focus:outline " +
+        " py-2 px-3 text-zinc-700 placeholder-zinc-900 mb-3 leading-tight outline-none focus:outline " +
         (error ? " border-red-500 " : " border-zinc-300 ");
 
     const handleChange = React.useCallback(

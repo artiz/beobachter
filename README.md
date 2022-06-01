@@ -16,13 +16,13 @@ Backend/scripts based on [`cookiecutter fastapi-react`](https://github.com/Buunt
 
 ## Features
 
-- **FastAPI** with Python 3.9
+- **FastAPI** with Python 3.9, totally asynchronous 
 - **React 17**
 - create-react-app with Typescript
 - Postgres
 - Redis (PubSub and TimeSeries)
 - Celery + Beat
-- SqlAlchemy with Alembic for migrations
+- SQLAlchemy with Alembic for migrations and asynchronous I/O (asyncio) support 
 - Pytest for backend tests
 - Docker compose for easier development
 - Nginx as a reverse proxy to allow backend and frontend on the same port

@@ -23,8 +23,19 @@ const Home = () => {
                         <h2 className="font-bold py-1 text-emerald-600">Backend</h2>
 
                         <ul className="pl-5 list-disc">
+                            <li>
+                                <WidgetLink href="https://www.sqlalchemy.org/">SQLAlchemy 1.4</WidgetLink> with Alembic
+                                for migrations and{" "}
+                                <WidgetLink href="https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html">
+                                    asynchronous I/O
+                                </WidgetLink>{" "}
+                                (asyncio) support
+                            </li>
                             <li>Celery periodic task example</li>
-                            <li>WebSocket integration with token authentication</li>
+                            <li>
+                                <WidgetLink href="/monitoring">WebSocket integration</WidgetLink> with token
+                                authentication
+                            </li>
                         </ul>
                         <h2 className="font-bold py-1 text-emerald-600">Frontend</h2>
                         <ul className="pl-5 list-disc">
@@ -33,7 +44,8 @@ const Home = () => {
                                 dynamic classes (check *.tailwind files)
                             </li>
                             <li>
-                                <WidgetLink href="https://recharts.org/">Recharts</WidgetLink> integration
+                                <WidgetLink href="https://recharts.org/">Recharts</WidgetLink>{" "}
+                                <WidgetLink href="/monitoring">integration</WidgetLink>
                             </li>
                             <li>Basic UI Widgets system</li>
                         </ul>
