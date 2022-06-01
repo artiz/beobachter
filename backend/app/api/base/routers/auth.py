@@ -22,14 +22,9 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = security.create_access_token(user)
 
-    access_token = security.create_access_token(
-        data=format_user(user),
-        expires_delta=access_token_expires,
-    )
-
-    return {"access_token": access_token, "token_type": "bearer"}
+    return token
 
 
 @r.post("/signup")
@@ -41,26 +36,6 @@ async def signup(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depe
             detail="Account already exists",
         )
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    token = security.create_access_token(user)
 
-    access_token = security.create_access_token(
-        data=format_user(user),
-        expires_delta=access_token_expires,
-    )
-
-    return {"user": user, "access_token": access_token, "token_type": "bearer"}
-
-
-def format_user(user: models.User):
-    if user.is_superuser:
-        permissions = "admin"
-    else:
-        permissions = "user"
-
-    return {
-        "sub": user.email,
-        "uid": user.id,
-        "fn": user.first_name,
-        "ln": user.last_name,
-        "permissions": permissions,
-    }
+    return {"user": user, **token}

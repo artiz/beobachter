@@ -1,7 +1,7 @@
 import jwt
 from fastapi import Depends, HTTPException, status, Header, Query, Request
 from fastapi.security.utils import get_authorization_scheme_param
-from typing import Optional
+from typing import Optional, Tuple
 
 from app.db.session import get_db
 from app.db import models
@@ -36,7 +36,7 @@ async def ws_protocol(sec_websocket_protocol: Optional[str] = Header(default="")
 async def get_current_user(
     db=Depends(get_db),
     token: str = Depends(auth_bearer_token),
-):
+) -> schemas.UserBase:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -60,22 +60,22 @@ async def check_current_user(
     db=Depends(get_db),
     log=Depends(get_log),
     token: str = Depends(auth_bearer_token),
-):
+) -> Tuple[schemas.UserBase, str]:
     """Check authentication user presence. No exceptions are thrown."""
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
-            return None
+            return (None, token)
 
         email: str = payload.get("sub")
 
     except Exception as er:
         await log.error(er)
-        return None
+        return (None, token)
 
     user = await get_user_by_email(db, email)
-    return user
+    return (user, token)
 
 
 async def get_current_active_user(
@@ -87,11 +87,11 @@ async def get_current_active_user(
 
 
 async def check_current_active_user(
-    current_user: models.User = Depends(check_current_user),
-):
-    if not current_user or not current_user.is_active:
+    user_data: Tuple[schemas.UserBase, str] = Depends(check_current_user),
+) -> Tuple[schemas.UserBase, str]:
+    if not user_data or not user_data[0] or not user_data[0].is_active:
         return None
-    return current_user
+    return user_data
 
 
 async def get_jwt_token_decoder():

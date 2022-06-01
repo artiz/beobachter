@@ -89,6 +89,18 @@ export class APIClient {
         return response;
     }
 
+    async me() {
+        const response = await this.get<ApiTokenResponse>("/users/me");
+
+        // refresh global token
+        if (response.data?.access_token) {
+            localStorage.setItem(API_TOKEN, response.data?.access_token);
+            window.postMessage(API_TOKEN);
+        }
+
+        return response;
+    }
+
     //
     // Basic API interaction functionality
     //

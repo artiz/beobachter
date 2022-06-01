@@ -10,8 +10,11 @@ from app.db.crud import (
     delete_user,
     edit_user,
 )
-from app.core.schemas.schemas import UserCreate, UserEdit, User, UserOut
+from app.core.schemas.schemas import UserCreate, UserEdit, User, UserWithToken
 from app.core.net.auth import get_current_active_user, get_current_active_superuser
+from app.core import security
+from app.api.dependencies.common import get_log
+
 
 users_router = r = APIRouter()
 
@@ -37,12 +40,17 @@ async def users_list(
     return users
 
 
-@r.get("/users/me", response_model=User, response_model_exclude_none=True)
+@r.get("/users/me", response_model=UserWithToken, response_model_exclude_none=True)
 async def user_me(current_user=Depends(get_current_active_user)):
     """
     Get own user
     """
-    return current_user
+
+    access_token = security.create_access_token(current_user)
+    return {
+        **current_user.__dict__,
+        "token": access_token,
+    }
 
 
 @r.get(
@@ -51,7 +59,6 @@ async def user_me(current_user=Depends(get_current_active_user)):
     response_model_exclude_none=True,
 )
 async def user_details(
-    request: Request,
     user_id: int,
     db=Depends(get_db),
     _=Depends(get_current_active_superuser),
@@ -65,7 +72,6 @@ async def user_details(
 
 @r.post("/users", response_model=User, response_model_exclude_none=True)
 async def user_create(
-    request: Request,
     user: UserCreate,
     db=Depends(get_db),
     _=Depends(get_current_active_superuser),
@@ -78,7 +84,6 @@ async def user_create(
 
 @r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_edit(
-    request: Request,
     user_id: int,
     user: UserEdit,
     db=Depends(get_db),
@@ -92,12 +97,14 @@ async def user_edit(
 
 @r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_delete(
-    request: Request,
     user_id: int,
     db=Depends(get_db),
+    log=Depends(get_log),
     current_user=Depends(get_current_active_superuser),
 ):
     """
     Delete existing user
     """
-    return await delete_user(db, user_id)
+    u = await delete_user(db, user_id)
+    log.info(f"Deleted user {u.id} {u.email}")
+    return u

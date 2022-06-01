@@ -67,6 +67,7 @@ services:
     command: bash app/run.sh
     depends_on:
       - postgres
+      - redis
 
   frontend:
     container_name: beo_frontend

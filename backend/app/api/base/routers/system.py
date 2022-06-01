@@ -10,7 +10,7 @@ from app.core.net.auth import (
 from app.core.config import settings
 from app.core.net.websocket import ConnectionManager
 from app.api.dependencies.management import get_system_metrics_manager
-from app.api.dependencies.common import get_redis, get_log
+from app.api.dependencies.common import get_metrics_service, get_redis, get_log
 from app.core import util
 from app.db.session import get_db
 from app.core.schemas.metrics import PerfMetrics
@@ -22,7 +22,7 @@ system_router = r = APIRouter()
 async def ws_system_metrics(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_system_metrics_manager),
-    current_user=Depends(check_current_active_user),
+    user_data=Depends(check_current_active_user),
     db=Depends(get_db),
     log=Depends(get_log),
     jwt_checker=Depends(get_jwt_token_decoder),
@@ -32,6 +32,7 @@ async def ws_system_metrics(
     """
     # manual connection close to avoid pool exhaustion
     await db.close()
+    [current_user, token] = user_data
     if not current_user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="auth_error")
         return
@@ -42,11 +43,7 @@ async def ws_system_metrics(
             if manager.stopped() or not manager.is_connected(sock_id):
                 break
             await asyncio.sleep(0.5)
-
-            # TODO: complete
-            # user_session = Depends(check_current_active_user)
-            # ... (user, token) = user_session
-            # jwt_checker(token)
+            jwt_checker(token)
     except Exception as ex:
         await log.error(ex)
     finally:
@@ -55,35 +52,13 @@ async def ws_system_metrics(
 
 @r.get("/system_metrics/{metric}")  # , response_model=List[PerfMetrics]
 async def system_metrics(
-    redis=Depends(get_redis),
+    metrics_svc=Depends(get_metrics_service),
     current_user=Depends(get_current_active_user),
     metric: Optional[str] = "cpu_p",
 ):
     """
-    Get with system performance data
+    Get system performance data
     """
-
-    # history part
-    series = f"{settings.PERF_METRICS_KEY_PREFIX}{metric}_hour"
-    exists = await redis.exists(series)
-    if not exists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Incorrect metric name: {series}",
-        )
-
-    points = await redis.execute_command("TS.RANGE", series, "0", "+")
-    last_ts = points[-1][0] if len(points) > 0 else 0
-
-    series = f"{settings.PERF_METRICS_KEY_PREFIX}{metric}_min"
-    exists = await redis.exists(series)
-    if not exists:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Incorrect metric name: {series}",
-        )
-
-    min_points = await redis.execute_command("TS.RANGE", series, last_ts, "+")
-    points.extend(min_points)
+    points = await metrics_svc.get_metrics(metric)
 
     return points
