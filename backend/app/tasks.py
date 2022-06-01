@@ -19,7 +19,7 @@ def perf_metrics_load() -> int:
     try:
         perf_metrics_loader.load()
     except Exception as e:
-        logger.exception("perf_metrics_load failed", e)
+        logger.exception("perf_metrics_load failed", exc_info=e)
 
 
 # Configure celery beat
@@ -35,4 +35,4 @@ def setup_periodic_tasks(sender, **kwargs):
         perf_metrics_loader.init()
         sender.add_periodic_task(settings.PERF_METRICS_LOAD_INTERVAL, perf_metrics_load.s(), name="Get perf metrics")
     except Exception as e:
-        logger.exception("setup_periodic_tasks failed", e)
+        logger.exception("setup_periodic_tasks failed", exc_info=e)

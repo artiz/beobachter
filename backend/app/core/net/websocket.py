@@ -68,9 +68,14 @@ class RedisBroadcaster(ConnectionManager):
     async def run(self):
         self._stopped = False
         self.log.debug("run...")
-        self.r = redis.Redis.from_url(self.redis_url, charset="utf-8", decode_responses=True)
-        self.ps = self.r.pubsub()
-        self.ps.subscribe([self.channel])
+        try:
+            self.r = redis.Redis.from_url(self.redis_url, decode_responses=True)
+            self.ps = self.r.pubsub()
+            self.ps.subscribe(self.channel)
+
+        except Exception as e:
+            self.log.exception("failed to run", exc_info=e)
+            return
 
         while True:
             if self.stopped():
@@ -78,6 +83,7 @@ class RedisBroadcaster(ConnectionManager):
             msg = self.ps.get_message()
             if msg and msg["type"] == "message":
                 data = f'{{"type":"{self.type}", "data": {msg["data"]} }}'
+                self.log.debug(data)
                 await self.broadcast(data)
 
             await asyncio.sleep(0.5)
