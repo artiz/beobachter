@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { ThailwindColorStr } from "ui/thailwind";
+import { Padding, ThailwindColorStr } from "ui/thailwind";
 
 interface IProps {
     title?: string;
@@ -10,8 +10,9 @@ interface IProps {
     iconColor?: ThailwindColorStr;
     children?: React.ReactNode;
     size?: "1" | "1/2" | "1/4" | "3/4";
-    padding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
-    bodyPadding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
+    padding?: Padding;
+    bodyPadding?: Padding;
+    bodyPaddingY?: Padding;
 }
 
 export default function Cmp({
@@ -21,7 +22,8 @@ export default function Cmp({
     iconColor,
     size = "1",
     padding = "2",
-    bodyPadding = "3",
+    bodyPadding = "4",
+    bodyPaddingY = "2",
     children,
 }: IProps) {
     if (!iconColor) {
@@ -29,9 +31,9 @@ export default function Cmp({
     }
 
     const rootCls = `w-full md:w-${size} p-${padding}`;
-    const bodyCls = `relative p-${bodyPadding}`;
+    const bodyCls = `relative p-${bodyPadding} leading-relaxed `;
     const contentCls = `bg-${color}-900 border border-${color}-800 rounded shadow-lg text-${color}-500`;
-    const headerCls = `flex flex-row border-b border-${color}-800 p-${bodyPadding}`;
+    const headerCls = `flex flex-row border-b border-${color}-800 px-${bodyPadding} py-${bodyPaddingY}`;
     const titleCls = `font-bold uppercase`;
     const iconCls = `text-${iconColor}-600 mr-2`;
 

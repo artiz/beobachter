@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { usePerfMetricsState, IPerfMetrics } from "core/metrics/usePerfMetricsState";
-// import LoadingCircle from "components/state/LoadingCircle";
+import { usePerfMetricsState } from "core/metrics/usePerfMetricsState";
 import Widget from "components/widget/Widget";
 import MetricsIndicator from "components/metrics/MetricsIndicator";
 import MetricsChart from "components/metrics/MetricsChart";

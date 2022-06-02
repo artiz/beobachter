@@ -1,7 +1,7 @@
-import React, { ReactNode, useEffect, useLayoutEffect } from "react";
+import React from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { ThailwindColorStr } from "ui/thailwind";
+import { Padding, ThailwindColorStr } from "ui/thailwind";
 import LoadingCircle from "components/state/LoadingCircle";
 
 interface IProps {
@@ -9,7 +9,7 @@ interface IProps {
     color?: ThailwindColorStr;
     icon?: IconName;
     iconColor?: ThailwindColorStr;
-    padding?: "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10";
+    padding?: Padding;
 
     value?: string | number | undefined;
     loading?: boolean;

@@ -149,7 +149,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
                 `${width} inline-block rounded shadow text-${color}-100 z-100 ` +
                 (inline
                     ? `  `
-                    : ` m-0 py-2 px-4 border bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-${color}-100
+                    : ` text-sm m-0 py-2 px-4 border bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-${color}-100
                         transition ease-in-out delay-10 `),
             [inline, hovercolor, color, width]
         );

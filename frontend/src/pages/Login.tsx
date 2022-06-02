@@ -101,7 +101,9 @@ const Login = () => {
                     </form>
 
                     {error && (
-                        <Alert baseClass="mt-4" color="orange" title="Error" text="Please check username/password" />
+                        <Alert baseClass="mt-4" color="orange" title="Error">
+                            Please check username/password
+                        </Alert>
                     )}
                 </div>
             </div>

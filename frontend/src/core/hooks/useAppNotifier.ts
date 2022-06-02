@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Dictionary } from "types/common";
+import { ThailwindColorStr } from "ui/thailwind";
 
 export type NotificationType = "auth_error" | "api_error" | "error" | "warning" | "success" | "info";
 
@@ -53,9 +54,12 @@ export function useAppNotifier(): [(notification: AppNotification) => void] {
 
 export function useAppNotificationListener(): [
     notification: AppNotification | undefined,
-    setter: (n: AppNotification | undefined) => void
+    reset: () => void,
+    text: string,
+    color: ThailwindColorStr
 ] {
     const [notification, setNotification] = useState<AppNotification>();
+    const closeAlert = useCallback(() => setNotification(undefined), [setNotification]);
 
     const handleMessage = (ev: MessageEvent) => {
         if (ev.data && ev.data.isNotification) {
@@ -70,5 +74,16 @@ export function useAppNotificationListener(): [
         };
     }, []);
 
-    return [notification, setNotification];
+    const alertColor = useMemo<ThailwindColorStr>(
+        () => (notification?.type?.includes("error") ? "red" : notification?.type === "warning" ? "orange" : "emerald"),
+        [notification]
+    );
+
+    const alertText = useMemo<string>(() => notification?.message || notification?.type || "Error", [notification]);
+
+    useEffect(() => {
+        void setTimeout(closeAlert, 2500);
+    }, [closeAlert, notification]);
+
+    return [notification, closeAlert, alertText, alertColor];
 }

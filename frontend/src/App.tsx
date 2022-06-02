@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-// import { ReactComponent as Logo } from "images/logo.svg";
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "components/header/Header";
@@ -12,24 +11,15 @@ import SignUp from "pages/SignUp";
 import AuthRoute from "core/router/AuthRoute";
 import { useAuthStatus } from "core/hooks/useAuthStatus";
 import { useAppNotificationListener } from "core/hooks/useAppNotifier";
-import "App.css";
 import Alert from "components/state/Alert";
-import { ThailwindColorStr } from "ui/thailwind";
-// import LoadingCircle from "components/state/LoadingCircle";
+
+import "App.css";
+
 function App() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [user, userLoading] = useAuthStatus();
-    const [notification, setNotification] = useAppNotificationListener();
+    const [notification, closeAlert, alertText, alertColor] = useAppNotificationListener();
 
-    const closeAlert = useCallback(() => setNotification(undefined), [setNotification]);
-    const alertColor = useMemo<ThailwindColorStr>(
-        () => (notification?.type?.includes("error") ? "red" : notification?.type === "warning" ? "orange" : "emerald"),
-        [notification]
-    );
-    const alertText = useMemo<string>(() => notification?.message || notification?.type || "Error", [notification]);
-    useEffect(() => {
-        void setTimeout(closeAlert, 2500);
-    }, [closeAlert, notification]);
     if (userLoading) {
         return null;
     }
@@ -41,9 +31,11 @@ function App() {
                     title="Notification"
                     baseClass="absolute z-50 mt-1 mx-auto left-0 right-0 w-full max-w-xl"
                     onClose={closeAlert}
+                    icon="bell"
                     color={alertColor}
-                    text={alertText}
-                />
+                >
+                    {alertText}
+                </Alert>
             )}
 
             <BrowserRouter>

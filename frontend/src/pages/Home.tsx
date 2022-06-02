@@ -6,13 +6,14 @@ import { ThailwindColor, ThailwindColorStr } from "ui/thailwind";
 import { useAuthStatus } from "core/hooks/useAuthStatus";
 import Widget from "components/widget/Widget";
 import WidgetLink from "components/widget/WidgetLink";
+import Alert from "components/state/Alert";
 
 const Home = () => {
     const [user] = useAuthStatus();
     return (
         <div className="w-full flex flex-wrap flex-grow">
             <div className="flex flex-wrap flex-grow w-full">
-                <Widget title={config.appName}>
+                <Widget size="3/4" title={config.appName}>
                     <h1 className="text-xl font-bold pb-2 text-emerald-600">Intro</h1>
                     <article>
                         <p className="pt-2">
@@ -58,8 +59,6 @@ const Home = () => {
                         )}
                     </article>
                 </Widget>
-            </div>
-            <div className="flex flex-wrap flex-grow w-full">
                 <Widget title="API" size="1/4" color="emerald">
                     <p>
                         Default Documentation:{" "}
@@ -74,8 +73,9 @@ const Home = () => {
                         </WidgetLink>
                     </p>
                 </Widget>
-
-                <Widget title="UI Components" size="3/4" color="zinc">
+            </div>
+            <div className="flex flex-wrap flex-grow w-full">
+                <Widget title="UI Components" size="1/2" color="zinc">
                     <section className="p-2 border border-indigo-200">
                         Dropdown:{" "}
                         <Menu label="Edit" color="slate" hovercolor="emerald">
@@ -122,6 +122,22 @@ const Home = () => {
                                 </Button>
                             ))}
                     </section>
+                </Widget>
+                <Widget title="Alert" size="1/2" color="zinc">
+                    <Alert
+                        color="orange"
+                        icon="asterisk"
+                        title="Title"
+                        onClose={() => {
+                            return void 0;
+                        }}
+                    >
+                        Orange
+                    </Alert>
+
+                    <Alert color="pink" icon="bell" title="Pink!">
+                        This is a pink alert - check it out!
+                    </Alert>
                 </Widget>
             </div>
         </div>
