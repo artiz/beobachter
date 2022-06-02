@@ -146,7 +146,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
         // Style the menu based on the color and width props.
         const rootCls = useMemo(
             () =>
-                `${width} inline-block rounded shadow text-${color}-100 z-20 ` +
+                `${width} inline-block rounded shadow text-${color}-100 z-100 ` +
                 (inline
                     ? `  `
                     : ` m-0 py-2 px-4 border bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-${color}-100
@@ -156,7 +156,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
 
         const menuCls = useMemo(
             () =>
-                `p-0 ${width} inline-block rounded shadow text-${color}-100 border border-${color}-600 z-20 ` +
+                `p-0 ${width} inline-block rounded shadow text-${color}-100 border border-${color}-600 z-100 ` +
                 (nested ? ` bg-${color}-900 ` : ` bg-${color}-900  `),
             [nested, open, hovercolor, color]
         );

@@ -5,14 +5,15 @@ import Widget from "components/widget/Widget";
 import MetricsIndicator from "components/metrics/MetricsIndicator";
 import MetricsChart from "components/metrics/MetricsChart";
 import { APIClient } from "core/api/client";
+import { NumDictionary } from "types/common";
 
 type RawMetrics = [number, string][];
 
 const Monitoring = () => {
     const client = new APIClient();
     const [metrics, metricsLoading] = usePerfMetricsState();
-    const [cpuHistory, setCpuHistory] = useState<IPerfMetrics[]>([]);
-    const [vmHistory, setVmHistory] = useState<IPerfMetrics[]>([]);
+    const [cpuHistory, setCpuHistory] = useState<NumDictionary[]>([]);
+    const [vmHistory, setVmHistory] = useState<NumDictionary[]>([]);
 
     useEffect(() => {
         client
@@ -25,8 +26,8 @@ const Monitoring = () => {
 
     useEffect(() => {
         if (metrics) {
-            setCpuHistory([...cpuHistory, { cpu_p: metrics.cpu_p, ts: metrics.ts }]);
-            setVmHistory([...vmHistory, { vm_p: metrics.vm_p, ts: metrics.ts }]);
+            setCpuHistory([...cpuHistory, { cpu_p: metrics.cpu_p ?? 0, ts: metrics.ts }]);
+            setVmHistory([...vmHistory, { vm_p: metrics.vm_p ?? 0, ts: metrics.ts }]);
         }
     }, [metrics]);
 
@@ -83,13 +84,13 @@ const Monitoring = () => {
 
 export default Monitoring;
 
-function parseMetrics(data: RawMetrics, metric: "cpu_p" | "vm_p"): IPerfMetrics[] {
+function parseMetrics(data: RawMetrics, metric: "cpu_p" | "vm_p"): NumDictionary[] {
     if (!Array.isArray(data)) {
         return [];
     }
 
     return data.map(([ts, value]) => ({
         ts: ts,
-        [metric]: parseFloat(value).toPrecision(2),
+        [metric]: +parseFloat(value).toPrecision(2),
     }));
 }

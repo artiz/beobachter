@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode, useEffect, useLayoutEffect } from "react";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { ThailwindColorStr } from "ui/thailwind";
@@ -15,7 +15,7 @@ interface IProps {
     loading?: boolean;
 }
 
-export default function Cmp({ title, color = "zinc", icon, iconColor, padding = "2", value, loading = false }: IProps) {
+export default function Cmp({ title, color = "zinc", icon, iconColor, padding = "3", value, loading = false }: IProps) {
     if (!iconColor) {
         iconColor = color;
     }
@@ -24,6 +24,21 @@ export default function Cmp({ title, color = "zinc", icon, iconColor, padding = 
     const iconCls = `rounded p-${padding} bg-${iconColor}-600 mr-${padding}`;
     const titleCls = `font-bold uppercase text-${color}-400`;
     const metricsCls = `font-bold text-2xl text-${color}-600`;
+
+    // const [prevValue, setPrevValue] = React.useState<string | number | undefined>();
+    // useLayoutEffect(() => {
+    //     setPrevValue(value);
+    // }, [value]);
+
+    // let direction: ReactNode = <Icon icon={["fas", "exchange"]} className={`text-${iconColor}-500`} />;
+
+    // if (prevValue != undefined && value != undefined) {
+    //     if (prevValue > value) {
+    //         direction = <Icon icon={["fas", "caret-down"]} className={`text-${iconColor}-500`} />;
+    //     } else if (prevValue < value) {
+    //         direction = <Icon icon={["fas", "caret-up"]} className={`text-${iconColor}-500`} />;
+    //     }
+    // }
 
     return (
         <div className="flex flex-row items-center">
