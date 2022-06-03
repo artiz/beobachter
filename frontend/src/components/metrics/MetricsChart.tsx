@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ChartColors } from "ui/thailwind";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea } from "recharts";
 
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
 
-import * as moment from "moment";
+import moment from "moment";
 import { NumDictionary } from "types/common";
-type Domain = [number, number] | undefined;
+type Domain = [number | string, number | string] | undefined;
+
 interface IProps {
     title: string;
     field: string;
@@ -17,14 +18,20 @@ interface IProps {
 
 const formatDate = (ts: string | number): string => {
     if (Number.isFinite(ts)) {
-        return moment.utc(+ts).format("YYYY-MM-DD HH:mm:ss");
+        return moment(+ts).format("YYYY-MM-DD HH:mm:ss");
     }
     return ts as string;
 };
 
 // Zoom logic copied from  https://codesandbox.io/s/recharts-scatter-plot-zoom-and-click-v68gk
 
-export default function Cmp({ title, field, data = [], lineColor = ChartColors[0], yRange }: IProps) {
+export default function Cmp({
+    title,
+    field,
+    data = [],
+    lineColor = ChartColors[0],
+    yRange = [0, "dataMax+5"],
+}: IProps) {
     const [isZooming, setIsZooming] = useState(false);
     const [zoomDomain, setZoomDomain] = useState<Domain>();
     const [xDomain, setXDomain] = useState<Domain>();
@@ -32,39 +39,42 @@ export default function Cmp({ title, field, data = [], lineColor = ChartColors[0
 
     useEffect(() => {
         if (!isZooming && !xDomain) {
-            setFilteredData(data);
+            setFilteredData([...data]);
         }
     }, [data]);
 
-    function handleZoomOut() {
+    const handleZoomOut = useCallback(() => {
         setXDomain(undefined);
         setZoomDomain(undefined);
         setFilteredData(data);
-    }
+    }, []);
 
-    function handleMouseDown(e: CategoricalChartState) {
+    const handleMouseDown = useCallback((e: CategoricalChartState) => {
         const ts = +(e?.activeLabel || 0);
         if (ts) {
             setIsZooming(true);
             setZoomDomain([ts, ts]);
         }
-    }
+    }, []);
 
-    function handleMouseMove(e: CategoricalChartState) {
-        if (isZooming && e?.activeLabel !== undefined) {
-            const ts = +e.activeLabel;
-            const domain = zoomDomain ? [...zoomDomain] : [ts, ts];
-            if (ts > domain[0]) {
-                domain[1] = ts;
-            } else {
-                domain[0] = ts;
+    const handleMouseMove = useCallback(
+        (e: CategoricalChartState) => {
+            if (isZooming && e?.activeLabel !== undefined) {
+                const ts = +e.activeLabel;
+                const domain = zoomDomain ? [...zoomDomain] : [ts, ts];
+                if (ts > domain[0]) {
+                    domain[1] = ts;
+                } else {
+                    domain[0] = ts;
+                }
+
+                setZoomDomain(domain as Domain);
             }
+        },
+        [isZooming, zoomDomain]
+    );
 
-            setZoomDomain(domain as Domain);
-        }
-    }
-
-    function handleMouseUp() {
+    const handleMouseUp = useCallback(() => {
         if (isZooming) {
             if (zoomDomain) {
                 setFilteredData(data?.filter((p) => p.ts >= zoomDomain[0] && p.ts <= zoomDomain[1]));
@@ -78,7 +88,7 @@ export default function Cmp({ title, field, data = [], lineColor = ChartColors[0
         }
 
         setIsZooming(false);
-    }
+    }, [isZooming, zoomDomain, data]);
 
     return (
         <div className="relative h-full w-full select-none">
@@ -109,13 +119,14 @@ export default function Cmp({ title, field, data = [], lineColor = ChartColors[0
                     <CartesianGrid strokeDasharray="2 2" />
                     <XAxis
                         dataKey="ts"
+                        type="number"
                         name="Date"
+                        domain={["dataMin", "dataMax"]}
                         tickFormatter={formatDate}
-                        allowDataOverflow={true}
                         interval="preserveStartEnd"
                     />
                     <YAxis domain={yRange} />
-                    {<Tooltip labelFormatter={formatDate} />}
+                    <Tooltip labelFormatter={formatDate} />
 
                     <ReferenceArea
                         isFront={true}

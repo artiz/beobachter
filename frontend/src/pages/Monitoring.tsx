@@ -7,6 +7,7 @@ import { APIClient } from "core/api/client";
 import { NumDictionary } from "types/common";
 
 type RawMetrics = [number, string][];
+const STEP = 60_000; // ms
 
 const Monitoring = () => {
     const client = new APIClient();
@@ -25,8 +26,20 @@ const Monitoring = () => {
 
     useEffect(() => {
         if (metrics) {
-            setCpuHistory([...cpuHistory, { cpu_p: metrics.cpu_p ?? 0, ts: metrics.ts }]);
-            setVmHistory([...vmHistory, { vm_p: metrics.vm_p ?? 0, ts: metrics.ts }]);
+            const lastTs = cpuHistory?.[cpuHistory?.length - 2]?.ts;
+            const point = { cpu_p: metrics.cpu_p ?? 0, vm_p: metrics.vm_p ?? 0, ts: metrics.ts };
+            if (lastTs) {
+                if (metrics.ts - lastTs > STEP) {
+                    setCpuHistory([...cpuHistory, point]);
+                    setVmHistory([...vmHistory, point]);
+                } else {
+                    setCpuHistory([...cpuHistory.slice(0, cpuHistory.length - 1), point]);
+                    setVmHistory([...vmHistory.slice(0, vmHistory.length - 1), point]);
+                }
+            } else {
+                setCpuHistory([point]);
+                setVmHistory([point]);
+            }
         }
     }, [metrics]);
 
@@ -55,25 +68,13 @@ const Monitoring = () => {
 
                 <Widget title="CPU" size="1/2" icon="microchip" iconColor="green">
                     <div className="h-[300px] text-xs w-full">
-                        <MetricsChart
-                            data={cpuHistory}
-                            title="CPU %"
-                            field="cpu_p"
-                            lineColor="#10b981"
-                            yRange={[0, 100]}
-                        />
+                        <MetricsChart data={cpuHistory} title="CPU %" field="cpu_p" lineColor="#10b981" />
                     </div>
                 </Widget>
 
                 <Widget title="Virtual Memory" size="1/2" icon="memory" iconColor="red">
                     <div className="h-[300px] text-xs">
-                        <MetricsChart
-                            data={vmHistory}
-                            title="VM %"
-                            field="vm_p"
-                            lineColor="#ef4444"
-                            yRange={[0, 100]}
-                        />
+                        <MetricsChart data={vmHistory} title="VM %" field="vm_p" lineColor="#ef4444" />
                     </div>
                 </Widget>
             </div>
