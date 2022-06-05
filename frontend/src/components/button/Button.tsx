@@ -36,8 +36,8 @@ function Button({
     onClick,
 }: ButtonProps) {
     const theming = outline
-        ? `bg-transparent hover:bg-${color}-500 text-${color}-500 hover:text-${color}-100 border border-${color}-500 hover:border-transparent active:bg-${color}-700`
-        : `border bg-${color}-600 border-${color}-700 hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 text-${color}-100`;
+        ? `bg-transparent  text-${color}-500 border border-${color}-500 `
+        : `border bg-${color}-600 border-${color}-700  text-${color}-100`;
 
     const content = children ?? title;
     const buttonCls =
@@ -46,7 +46,11 @@ function Button({
         theming +
         (inline ? " m-0 mr-2 " : " mb-2 mr-2 ") +
         (fullWidth ? " w-full " : " min-w-[6rem] ") +
-        (disabled ? " opacity-50 cursor-not-allowed " : "");
+        (disabled
+            ? " opacity-50 cursor-not-allowed "
+            : outline
+            ? ` hover:bg-${color}-500 hover:text-${color}-100 hover:border-transparent active:bg-${color}-700 `
+            : ` hover:border-${color}-600 hover:bg-${color}-500 active:bg-${color}-700 `);
 
     if (href) {
         return useRouter ? (

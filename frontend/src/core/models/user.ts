@@ -9,6 +9,15 @@ export class JwtUser implements JwtPayload {
     permissions?: string;
 }
 
+export class DbUser {
+    id!: string;
+    email!: string;
+    first_name!: string;
+    last_name!: string;
+    is_active!: boolean;
+    is_superuser!: boolean;
+}
+
 export const PERMISSIONS_SEPARATOR = ",";
 
 export class User {
@@ -17,13 +26,13 @@ export class User {
     firstName?: string;
     lastName?: string;
     avatarUrl?: string;
-    permissions: string[] = [];
+    permissions?: string[] = [];
 
     constructor(email: string) {
         this.email = email;
     }
+
     static fromJwt(jwt: JwtUser): User {
-        // admin@fastapi-react-project.com
         const avatar = jwt.sub ? gravatar.url(jwt.sub, { s: "128" }) : undefined;
 
         return {
@@ -34,5 +43,17 @@ export class User {
             permissions: (jwt.permissions || "").split(PERMISSIONS_SEPARATOR),
             avatarUrl: avatar,
         } as User;
+    }
+
+    static fromDbUser(user: DbUser): User {
+        const avatar = user.email ? gravatar.url(user.email, { s: "128" }) : undefined;
+
+        return {
+            id: user.id,
+            email: user.email,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            avatarUrl: avatar,
+        };
     }
 }

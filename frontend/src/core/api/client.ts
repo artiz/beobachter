@@ -1,5 +1,6 @@
 import config from "core/config";
 import { sendNotification, formatAuthError, formatError } from "core/hooks/useAppNotifier";
+import { User, DbUser } from "core/models/user";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import * as moment from "moment";
 
@@ -64,7 +65,10 @@ export interface ApiOptions {
     skipAuthCheck?: boolean;
     skipStatusCheck?: boolean;
     skipErrorCheck?: boolean;
+    setLoading?: (state: boolean) => void;
 }
+
+type AccountResponse = DbUser & { token: ApiTokenResponse };
 
 export class APIClient {
     // ----- Authentication & User Operations
@@ -89,17 +93,43 @@ export class APIClient {
         return response;
     }
 
-    async me() {
-        const response = await this.get<ApiTokenResponse>("/users/me");
+    async me(options?: ApiOptions): Promise<User> {
+        const response = await this.get<AccountResponse>("/users/me", options);
 
         // refresh global token
-        if (response.data?.access_token) {
-            localStorage.setItem(API_TOKEN, response.data?.access_token);
+        if (response.data?.token?.access_token) {
+            localStorage.setItem(API_TOKEN, response.data?.token?.access_token);
             window.postMessage(API_TOKEN);
         }
 
-        return response;
+        return User.fromDbUser(response.data);
     }
+
+    async updateProfile(user: User, options?: ApiOptions): Promise<User> {
+        const response = await this.patch<AccountResponse>(
+            "/users/me",
+            JSON.stringify({
+                first_name: user.firstName,
+                last_name: user.lastName,
+            }),
+            options
+        );
+
+        return response.data && User.fromDbUser(response.data);
+    }
+
+    // register(email, password, fullName) {
+    //     const loginData = {
+    //         email,
+    //         password,
+    //         full_name: fullName,
+    //         is_active: true,
+    //     };
+
+    //     return this.apiClient.post("/auth/signup", loginData).then((resp) => {
+    //         return resp.data;
+    //     });
+    // }
 
     //
     // Basic API interaction functionality
@@ -116,6 +146,7 @@ export class APIClient {
         options: ApiOptions;
     }): Promise<JsonResponse<T>> {
         let result: JsonResponse<T> = {} as JsonResponse<T>;
+        options?.setLoading?.(true);
         try {
             const response = await fetch(
                 config.apiBasePath + url,
@@ -135,6 +166,8 @@ export class APIClient {
             }
 
             throw e;
+        } finally {
+            options?.setLoading?.(false);
         }
 
         if (result?.headers?.get("content-type")?.includes("json")) {
@@ -161,8 +194,20 @@ export class APIClient {
         return this.exec<T>({ url, method: "get", options });
     }
 
+    async delete<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "delete", options });
+    }
+
     async post<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
         return this.exec<T>({ url, method: "post", body, options });
+    }
+
+    async patch<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "patch", body, options });
+    }
+
+    async put<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "put", body, options });
     }
 
     private prepareRequest({
@@ -183,7 +228,7 @@ export class APIClient {
         }
 
         const request = {
-            method,
+            method: method.toUpperCase(),
             headers,
             body,
             credentials: "include" as RequestCredentials,
@@ -201,32 +246,4 @@ export class APIClient {
 
         return request;
     }
-
-    // fetchUser() {
-    //     return this.apiClient.get("/auth/me").then(({ data }) => {
-    //         localStorage.setItem("user", JSON.stringify(data));
-    //         return data;
-    //     });
-    // }
-
-    // register(email, password, fullName) {
-    //     const loginData = {
-    //         email,
-    //         password,
-    //         full_name: fullName,
-    //         is_active: true,
-    //     };
-
-    //     return this.apiClient.post("/auth/signup", loginData).then((resp) => {
-    //         return resp.data;
-    //     });
-    // }
-
-    // // Logging out is just deleting the jwt.
-    // logout() {
-    //     // Add here any other data that needs to be deleted from local storage
-    //     // on logout
-    //     localStorage.removeItem("token");
-    //     localStorage.removeItem("user");
-    // }
 }

@@ -3,11 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Header from "components/header/Header";
 import Footer from "components/Footer";
-import Home from "pages/Home";
-import Monitoring from "pages/Monitoring";
-import Error from "pages/Error";
-import Login from "pages/Login";
-import SignUp from "pages/SignUp";
+import { Home, Monitoring, Error, Login, SignUp, Account } from "pages";
 import AuthRoute from "core/router/AuthRoute";
 import { useAuthStatus } from "core/hooks/useAuthStatus";
 import { useAppNotificationListener } from "core/hooks/useAppNotifier";
@@ -25,11 +21,11 @@ function App() {
     }
 
     return (
-        <div className="h-screen flex flex-col bg-zinc-200">
+        <>
             {notification && (
                 <Alert
                     title="Notification"
-                    baseClass="absolute z-50 mt-1 mx-auto left-0 right-0 w-full max-w-xl"
+                    baseClass="fixed z-50 mt-1 px-4 py-3 mx-auto left-0 right-0 w-full max-w-xl"
                     onClose={closeAlert}
                     icon="bell"
                     color={alertColor}
@@ -37,23 +33,29 @@ function App() {
                     {alertText}
                 </Alert>
             )}
+            <div className="h-screen flex flex-col bg-zinc-200">
+                <BrowserRouter>
+                    <Header />
+                    <div className="flex-grow container w-full mx-auto mb-10">
+                        <Routes>
+                            <Route path="/" element={<Home />} />
+                            <Route path="/home" element={<Home />} />
+                            <Route
+                                path="/monitoring"
+                                element={<AuthRoute loading={userLoading} cmp={<Monitoring />} />}
+                            />
+                            <Route path="/signup" element={<SignUp />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/account" element={<AuthRoute loading={userLoading} cmp={<Account />} />} />
 
-            <BrowserRouter>
-                <Header />
-                <div className="flex-grow container w-full mx-auto mb-10">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/home" element={<Home />} />
-                        <Route path="/monitoring" element={<AuthRoute loading={userLoading} cmp={<Monitoring />} />} />
-                        <Route path="/signup" element={<SignUp />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="*" element={<Error />} />
-                    </Routes>
-                </div>
+                            <Route path="*" element={<Error />} />
+                        </Routes>
+                    </div>
 
-                <Footer />
-            </BrowserRouter>
-        </div>
+                    <Footer />
+                </BrowserRouter>
+            </div>
+        </>
     );
 }
 

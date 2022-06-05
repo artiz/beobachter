@@ -24,7 +24,7 @@ function Header() {
 
     return (
         <>
-            <nav id="header" className="bg-zinc-900 fixed w-full z-50 top-0 border-b border-zinc-500">
+            <nav id="header" className="bg-zinc-900 fixed w-full z-10 top-0 border-b border-zinc-500">
                 <div className="w-full container mx-auto flex flex-wrap items-center mt-0 py-2 px-2 md:pb-1">
                     <div className="w-1/2 pl-2 md:pl-0">
                         <Link

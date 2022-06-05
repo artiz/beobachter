@@ -1,4 +1,7 @@
+import time
+from fastapi import Request
 from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from app.core import util
 from aiologger.levels import LogLevel
 
@@ -23,3 +26,18 @@ class RequestLogMiddleware:
             ),
         )
         await self.app(scope, receive, send)
+
+
+class ProcessTimeMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: ASGIApp):
+        super().__init__(app, dispatch=self.dispatch)
+
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> None:
+        if request.scope["type"] != "http":
+            return await call_next(request)
+
+        start_time = time.time()
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        response.headers["X-Process-Time"] = str(process_time)
+        return response

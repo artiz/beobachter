@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { ChartColors } from "ui/thailwind";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea } from "recharts";
 
@@ -37,7 +37,7 @@ export default function Cmp({
     const [xDomain, setXDomain] = useState<Domain>();
     const [filteredData, setFilteredData] = useState<NumDictionary[]>([]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!isZooming && !xDomain) {
             setFilteredData([...data]);
         }

@@ -1,8 +1,9 @@
 import uvicorn
 import asyncio
 import time
-from fastapi import FastAPI, Depends, WebSocket
+from fastapi import FastAPI, Depends, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exception_handlers import http_exception_handler
 
 from app.api.base.routers.users import users_router
 from app.api.base.routers.auth import auth_router
@@ -12,7 +13,7 @@ from app.db.session import session
 from app.core.net.auth import get_current_active_user
 from app.core.celery_app import celery_app
 from app.core import global_app, util
-from app.core.middleware.logging import RequestLogMiddleware
+from app.core.middleware.logging import RequestLogMiddleware, ProcessTimeMiddleware
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -51,16 +52,14 @@ async def app_shutdown():
     asyncio.create_task(global_app.shutdown())
 
 
-# @app.middleware("http")
-# async def add_process_time_header(request: Request, call_next):
-#     start_time = time.time()
-#     response = await call_next(request)
-#     process_time = time.time() - start_time
-#     response.headers["X-Process-Time"] = str(process_time)
-#     return response
-
-
 app.add_middleware(RequestLogMiddleware)
+# app.add_middleware(ProcessTimeMiddleware)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    log.exception(exc)
+    return await http_exception_handler(request, exc)
 
 
 @app.get(settings.API)

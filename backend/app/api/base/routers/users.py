@@ -53,6 +53,14 @@ async def user_me(current_user=Depends(get_current_active_user)):
     }
 
 
+@r.patch("/users/me", response_model=User, response_model_exclude_none=True)
+async def user_me(user: UserEdit, current_user=Depends(get_current_active_user), db=Depends(get_db)):
+    """
+    Update current user
+    """
+    return await edit_user(db, current_user.id, user)
+
+
 @r.get(
     "/users/{user_id}",
     response_model=User,

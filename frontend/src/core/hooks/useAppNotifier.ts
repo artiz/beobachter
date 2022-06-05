@@ -82,7 +82,8 @@ export function useAppNotificationListener(): [
     const alertText = useMemo<string>(() => notification?.message || notification?.type || "Error", [notification]);
 
     useEffect(() => {
-        void setTimeout(closeAlert, 2500);
+        const ts = setTimeout(closeAlert, 3000);
+        return () => clearTimeout(ts);
     }, [closeAlert, notification]);
 
     return [notification, closeAlert, alertText, alertColor];
