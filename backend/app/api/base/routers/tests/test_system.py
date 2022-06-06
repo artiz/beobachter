@@ -27,7 +27,7 @@ async def get_metrics_service_mock():
 async def test_metrics_cpu(client, superuser_token_headers):
     app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
 
-    response = await client.get("/api/system_metrics/cpu_p", headers=superuser_token_headers)
+    response = await client.get("/api/system/metrics/cpu_p", headers=superuser_token_headers)
 
     assert response.status_code == 200
     assert response.json() == METRICS["cpu_p"]
@@ -36,7 +36,7 @@ async def test_metrics_cpu(client, superuser_token_headers):
 async def test_metrics_vm(client, superuser_token_headers):
     app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
 
-    response = await client.get("/api/system_metrics/vm_p", headers=superuser_token_headers)
+    response = await client.get("/api/system/metrics/vm_p", headers=superuser_token_headers)
 
     assert response.status_code == 200
     assert response.json() == METRICS["vm_p"]
@@ -45,7 +45,7 @@ async def test_metrics_vm(client, superuser_token_headers):
 async def test_metrics_invalid(client, superuser_token_headers):
     app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
 
-    response = await client.get("/api/system_metrics/invalid", headers=superuser_token_headers)
+    response = await client.get("/api/system/metrics/invalid", headers=superuser_token_headers)
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Incorrect metric name: invalid"}

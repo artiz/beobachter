@@ -17,10 +17,10 @@ const Monitoring = () => {
 
     useEffect(() => {
         client
-            .get<RawMetrics>("/system_metrics/cpu_p", { skipErrorCheck: true })
+            .get<RawMetrics>("/system/metrics/cpu_p", { skipErrorCheck: true })
             .then((res) => setCpuHistory(parseMetrics(res.data, "cpu_p")));
         client
-            .get<RawMetrics>("/system_metrics/vm_p", { skipErrorCheck: true })
+            .get<RawMetrics>("/system/metrics/vm_p", { skipErrorCheck: true })
             .then((res) => setVmHistory(parseMetrics(res.data, "vm_p")));
     }, []);
 

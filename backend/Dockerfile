@@ -1,11 +1,9 @@
   
-FROM python:3.9.12
+FROM nginx/unit:1.27.0-python3.10
 
-# create the app user
-RUN addgroup --system app && adduser --system --group app
-
-RUN apt update
-RUN apt install -y postgresql-client
+RUN mkdir /home/unit
+ENV HOME /home/unit
+RUN apt update && apt --no-install-recommends --no-install-suggests -y install postgresql-client
 
 RUN mkdir /app
 WORKDIR /app/
@@ -25,12 +23,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 RUN chmod +x app/run.sh
+RUN chown -R unit:unit /var/lib/unit/
+RUN chown -R unit:unit .
 
-# chown all the files to the app user
-RUN chown -R app:app .
+COPY config.json /docker-entrypoint.d/config.json
 
-# change to the app user
-# Switch to a non-root user, which is recommended by Heroku.
-USER app
-
-EXPOSE 8000
+# run the app (from parent Unint image)
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# CMD ["unitd", "--no-daemon", "--control", "unix:/var/run/control.unit.sock"]

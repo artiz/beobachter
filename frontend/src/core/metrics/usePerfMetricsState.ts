@@ -23,7 +23,7 @@ export function usePerfMetricsState(): [IPerfMetrics | undefined, boolean] {
         const timeout = setTimeout(() => setLoading(true), 100);
 
         const token = localStorage.getItem(API_TOKEN) ?? "";
-        const ws = new WebSocket(`${config.wsBasePath}/ws_system_metrics?token=${encodeURIComponent(token)}`);
+        const ws = new WebSocket(`${config.wsBasePath}/system/ws_metrics?token=${encodeURIComponent(token)}`);
         websocket.current = ws;
 
         ws.onmessage = (event) => {

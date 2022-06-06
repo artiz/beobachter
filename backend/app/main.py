@@ -1,9 +1,10 @@
 import uvicorn
 import asyncio
-import time
-from fastapi import FastAPI, Depends, Request, WebSocket
+from fastapi import FastAPI, Depends, Request, WebSocket, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exception_handlers import http_exception_handler
+from starlette.responses import JSONResponse
+
 
 from app.api.base.routers.users import users_router
 from app.api.base.routers.auth import auth_router
@@ -59,7 +60,10 @@ app.add_middleware(RequestLogMiddleware)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     log.exception(exc)
-    return await http_exception_handler(request, exc)
+    if isinstance(exc, HTTPException):
+        return await http_exception_handler(request, exc)
+
+    return JSONResponse({"error": str(exc)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @app.get(settings.API)

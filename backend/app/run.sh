@@ -16,7 +16,7 @@ export APP_MODULE=${APP_MODULE-app.main:app}
 export HOST=${HOST:-0.0.0.0}
 export PORT=${PORT:-8888}
 
-# PROD: run gunicorn
-# exec gunicorn --bind $HOST:$PORT "$APP_MODULE" --log-level "warning" -k uvicorn.workers.UvicornWorker
+# PROD[Nginx Unit]: see docker-compose.yml
+# PROD[gunicorn]: exec gunicorn --bind $HOST:$PORT "$APP_MODULE" --log-level "warning" -k uvicorn.workers.UvicornWorker
 
 exec uvicorn --reload --host $HOST --port $PORT "$APP_MODULE" --log-level "warning"

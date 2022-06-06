@@ -18,7 +18,7 @@ from app.core.schemas.metrics import PerfMetrics
 system_router = r = APIRouter()
 
 
-@r.websocket("/ws_system_metrics")
+@r.websocket("/system/ws_metrics")
 async def ws_system_metrics(
     websocket: WebSocket,
     manager: ConnectionManager = Depends(get_system_metrics_manager),
@@ -50,7 +50,7 @@ async def ws_system_metrics(
         await manager.disconnect(sock_id)
 
 
-@r.get("/system_metrics/{metric}")  # , response_model=List[PerfMetrics]
+@r.get("/system/metrics/{metric}")  # , response_model=List[PerfMetrics]
 async def system_metrics(
     metrics_svc=Depends(get_metrics_service),
     current_user=Depends(get_current_active_user),

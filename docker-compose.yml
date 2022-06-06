@@ -42,7 +42,7 @@ services:
     build:
       context: backend
       dockerfile: Dockerfile
-    command: celery --app app.tasks worker --beat --loglevel=WARNING -Q main-queue -E -s /tmp/celerybeat-schedule
+    command: celery --app app.tasks worker --uid unit --beat --loglevel=WARNING -Q main-queue -E -s /tmp/celerybeat-schedule
     volumes:
       - ./backend:/app/:cached
     depends_on:
@@ -64,7 +64,8 @@ services:
       CELERY_BROKER: "redis://redis:6379/0"
       PORT: 8888
       LOG_LEVEL: "WARNING" # for custom async logger, uvicorn log setup in run.sh
-    command: bash app/run.sh
+    # comment out `command` for production
+    # command: bash app/run.sh
     depends_on:
       - postgres
       - redis

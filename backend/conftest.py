@@ -51,13 +51,6 @@ def create_test_db():
     drop_database(test_db_url)
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.get_event_loop()
-    yield loop
-    loop.close()
-
-
 @pytest_asyncio.fixture()
 async def test_db():
     engine = create_async_engine(get_test_db_url(), future=True)
