@@ -10,12 +10,13 @@ export class JwtUser implements JwtPayload {
 }
 
 export class DbUser {
-    id!: string;
+    id?: string;
     email!: string;
-    first_name!: string;
-    last_name!: string;
-    is_active!: boolean;
-    is_superuser!: boolean;
+    password?: string;
+    first_name?: string;
+    last_name?: string;
+    is_active?: boolean;
+    is_superuser?: boolean;
 }
 
 export const PERMISSIONS_SEPARATOR = ",";

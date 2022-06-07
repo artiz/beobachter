@@ -53,12 +53,17 @@ async def user_me(current_user=Depends(get_current_active_user)):
     }
 
 
-@r.patch("/users/me", response_model=User, response_model_exclude_none=True)
+@r.patch("/users/me", response_model=UserWithToken, response_model_exclude_none=True)
 async def user_me(user: UserEdit, current_user=Depends(get_current_active_user), db=Depends(get_db)):
     """
     Update current user
     """
-    return await edit_user(db, current_user.id, user)
+    updated_user = await edit_user(db, current_user.id, user)
+    access_token = security.create_access_token(updated_user)
+    return {
+        **updated_user.__dict__,
+        "token": access_token,
+    }
 
 
 @r.get(

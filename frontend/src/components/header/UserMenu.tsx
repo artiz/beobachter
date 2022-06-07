@@ -25,7 +25,6 @@ function UserMenu() {
                 inline={true}
             >
                 <LinkMenuItem to="/account">My account</LinkMenuItem>
-                <LinkMenuItem to="/notifications">Notifications</LinkMenuItem>
                 <MenuSeparator />
                 <LinkMenuItem to="/login" onClick={doLogout}>
                     Logout

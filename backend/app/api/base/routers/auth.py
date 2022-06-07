@@ -8,6 +8,7 @@ from app.db import models
 from app.core import security
 from app.core.config import settings
 from app.core.net.auth import authenticate_user, sign_up_new_user
+from app.core.schemas.schemas import UserEdit
 
 auth_router = r = APIRouter()
 
@@ -28,9 +29,9 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
 
 
 @r.post("/signup")
-async def signup(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await sign_up_new_user(db, form_data.username, form_data.password)
-    if not user:
+async def signup(user: UserEdit, db=Depends(get_db)):
+    user = await sign_up_new_user(db, user)
+    if user == False:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Account already exists",
@@ -38,4 +39,4 @@ async def signup(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depe
 
     token = security.create_access_token(user)
 
-    return {"user": user, **token}
+    return {"user": user, "token": token}

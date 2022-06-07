@@ -41,7 +41,7 @@ const Home = () => {
                         <h2 className="font-bold py-1 text-emerald-600">Frontend</h2>
                         <ul className="pl-5 list-disc">
                             <li>
-                                <WidgetLink href="https://tailwindcss.com/">Tailwind CSS</WidgetLink> with support if
+                                <WidgetLink href="https://tailwindcss.com/">Tailwind CSS</WidgetLink> with support of
                                 dynamic classes (check *.tailwind files)
                             </li>
                             <li>

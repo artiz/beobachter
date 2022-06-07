@@ -121,15 +121,18 @@ async def authenticate_user(db, email: str, password: str):
     return user
 
 
-async def sign_up_new_user(db, email: str, password: str) -> models.User:
-    user = await get_user_by_email(db, email)
-    if user:
+async def sign_up_new_user(db, user: schemas.UserEdit) -> models.User:
+    existing = await get_user_by_email(db, user.email)
+    if existing:
         return False  # User already exists
+
     new_user = await create_user(
         db,
         schemas.UserCreate(
-            email=email,
-            password=password,
+            email=user.email,
+            password=user.password,
+            first_name=user.first_name,
+            last_name=user.last_name,
             is_active=True,
             is_superuser=False,
         ),

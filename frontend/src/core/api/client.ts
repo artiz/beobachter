@@ -51,13 +51,13 @@ export class AuthenticationError extends RequestError {
         super(status, message);
     }
 
-    static fromStatus(status: number): AuthenticationError {
+    static fromStatus(status: number, error?: string): AuthenticationError {
         if (status === 401) {
-            return new AuthenticationError(status, "Invalid user credentials");
+            return new AuthenticationError(status, error || "Invalid user credentials");
         } else if (status === 403) {
-            return new AuthenticationError(status, "Not enough permissions");
+            return new AuthenticationError(status, error || "Not enough permissions");
         } else {
-            return new AuthenticationError(status, "Authentication error");
+            return new AuthenticationError(status, error || "Authentication error");
         }
     }
 }
@@ -69,7 +69,7 @@ export class AuthTokenExpiredError extends AuthenticationError {
 }
 
 export class JsonResponse<T = unknown> extends Response {
-    data: T;
+    data: T & { detail?: string };
 
     constructor(d: T) {
         super();
@@ -102,22 +102,14 @@ export class APIClient {
 
         const response = await this.post<ApiTokenResponse>("/auth/login", form, { throwErrors: true });
 
-        if (response.data?.access_token) {
-            localStorage.setItem(API_TOKEN, response.data?.access_token);
-            window.postMessage(API_TOKEN);
-        }
+        this.loadToken(response.data?.access_token);
         return response;
     }
 
     async me(options?: ApiOptions): Promise<User> {
         const response = await this.get<AccountResponse>("/users/me", options);
 
-        // refresh global token
-        if (response.data?.token?.access_token) {
-            localStorage.setItem(API_TOKEN, response.data?.token?.access_token);
-            window.postMessage(API_TOKEN);
-        }
-
+        this.loadToken(response.data?.token?.access_token);
         return User.fromDbUser(response.data);
     }
 
@@ -131,26 +123,53 @@ export class APIClient {
             options
         );
 
+        this.loadToken(response.data?.token?.access_token);
         return response.data && User.fromDbUser(response.data);
     }
 
-    // register(email, password, fullName) {
-    //     const loginData = {
-    //         email,
-    //         password,
-    //         full_name: fullName,
-    //         is_active: true,
-    //     };
+    async register(user: DbUser): Promise<User> {
+        const response = await this.post<AccountResponse>("/auth/signup", JSON.stringify(user), { throwErrors: true });
+        // login the user
+        if (response.data?.token?.access_token) {
+            localStorage.setItem(API_TOKEN, response.data?.token?.access_token);
+            window.postMessage(API_TOKEN);
+        }
 
-    //     return this.apiClient.post("/auth/signup", loginData).then((resp) => {
-    //         return resp.data;
-    //     });
-    // }
+        return User.fromDbUser(response.data);
+    }
 
     //
     // Basic API interaction functionality
     //
-    async exec<T = unknown>({
+    async get<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "get", options });
+    }
+
+    async delete<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "delete", options });
+    }
+
+    async post<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "post", body, options });
+    }
+
+    async patch<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "patch", body, options });
+    }
+
+    async put<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
+        return this.exec<T>({ url, method: "put", body, options });
+    }
+
+    // #region Private methods
+    private loadToken(token: string) {
+        if (token) {
+            localStorage.setItem(API_TOKEN, token);
+            window.postMessage(API_TOKEN);
+        }
+    }
+
+    private async exec<T = unknown>({
         url,
         method,
         body,
@@ -186,14 +205,16 @@ export class APIClient {
         }
 
         let ex: Error | undefined;
+        const error = result?.data?.detail;
+
         if ([401, 403].includes(result.status)) {
             localStorage.removeItem(API_TOKEN);
             window.postMessage(API_TOKEN);
-            ex = AuthenticationError.fromStatus(result.status);
+            ex = AuthenticationError.fromStatus(result.status, error);
         } else if (result.status > 499) {
-            ex = new ServerError(result.status, result.statusText);
+            ex = new ServerError(result.status, error || result.statusText);
         } else if (result.status > 399) {
-            ex = new RequestError(result.status, result.statusText);
+            ex = new RequestError(result.status, error || result.statusText);
         }
 
         if (ex) {
@@ -205,26 +226,6 @@ export class APIClient {
         }
 
         return result;
-    }
-
-    async get<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "get", options });
-    }
-
-    async delete<T = unknown>(url: string, options: ApiOptions = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "delete", options });
-    }
-
-    async post<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "post", body, options });
-    }
-
-    async patch<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "patch", body, options });
-    }
-
-    async put<T = unknown>(url: string, body: BodyInit, options: ApiOptions = {}): Promise<JsonResponse<T>> {
-        return this.exec<T>({ url, method: "put", body, options });
     }
 
     private prepareRequest({
@@ -263,4 +264,6 @@ export class APIClient {
 
         return request;
     }
+
+    // #endregion
 }

@@ -27,7 +27,7 @@ async def test_signup(client, monkeypatch):
 
     response = await client.post(
         "/api/auth/signup",
-        data={"username": "some@email.com", "password": "randompassword"},
+        json={"email": "some@email.com", "password": "randompassword"},
     )
     assert response.status_code == 200
 
@@ -38,8 +38,8 @@ async def test_resignup(client, test_user, monkeypatch):
 
     response = await client.post(
         "/api/auth/signup",
-        data={
-            "username": test_user.email,
+        json={
+            "email": test_user.email,
             "password": "password_hashing_is_skipped_via_monkey_patch",
         },
     )
