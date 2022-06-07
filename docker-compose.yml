@@ -59,13 +59,12 @@ services:
     ports:
       - 8888:8888
     environment:
-      PYTHONPATH: .
       DATABASE_URI: "postgresql+asyncpg://postgres:password@postgres:5432/postgres"
       CELERY_BROKER: "redis://redis:6379/0"
       PORT: 8888
       LOG_LEVEL: "WARNING" # for custom async logger, uvicorn log setup in run.sh
     # comment out `command` for production
-    # command: bash app/run.sh
+    command: bash app/run.sh
     depends_on:
       - postgres
       - redis

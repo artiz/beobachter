@@ -14,7 +14,7 @@ import "App.css";
 function App() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [user, userLoading] = useAuthStatus();
-    const [notification, closeAlert, alertText, alertColor] = useAppNotificationListener();
+    const [notification, closeAlert, alertText, alertColor, alertTitle] = useAppNotificationListener();
 
     if (userLoading) {
         return null;
@@ -24,7 +24,7 @@ function App() {
         <>
             {notification && (
                 <Alert
-                    title="Notification"
+                    title={alertTitle}
                     baseClass="fixed z-50 mt-1 px-4 py-3 mx-auto left-0 right-0 w-full max-w-xl"
                     onClose={closeAlert}
                     icon="bell"
@@ -51,7 +51,6 @@ function App() {
                             <Route path="*" element={<Error />} />
                         </Routes>
                     </div>
-
                     <Footer />
                 </BrowserRouter>
             </div>

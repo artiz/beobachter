@@ -29,14 +29,14 @@ const Login = () => {
 
         client
             .login(username, password || "")
-            .catch((err) => setError(err.message || "Invalid credentials"))
             .then(() => {
                 if (location.pathname === "/login") {
-                    navigate("/");
+                    navigate("/", { replace: true });
                 }
             })
+            .catch((err) => setError(err.message || "Invalid credentials"))
             .finally(() => setLoading(false));
-    }, [username, password]);
+    }, [username, password, navigate, location]);
 
     const handleSubmit = useCallback(
         (ev: FormEvent<HTMLFormElement>) => {

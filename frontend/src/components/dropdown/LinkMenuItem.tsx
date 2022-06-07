@@ -15,10 +15,10 @@ export const LinkMenuItem = forwardRef<HTMLButtonElement, LinkMenuItemProps>(
 
         const handleClick = useCallback(
             (evt: React.MouseEvent<HTMLButtonElement>) => {
+                navigate(to, { replace: true });
                 onClick?.(evt);
-                navigate(to);
             },
-            [to, onClick]
+            [to, onClick, navigate]
         );
 
         return (

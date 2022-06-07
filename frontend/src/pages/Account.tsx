@@ -1,5 +1,4 @@
-import React, { FormEvent, useCallback, useMemo, useState, useRef, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { FormEvent, useCallback, useState, useEffect } from "react";
 
 import Button from "components/button/Button";
 
@@ -7,7 +6,6 @@ import { APIClient } from "core/api/client";
 import Input from "components/form/Input";
 import Alert from "components/state/Alert";
 import { User } from "core/models/user";
-import { Dictionary } from "types/common";
 
 const Page = () => {
     const client = new APIClient();
@@ -15,7 +13,6 @@ const Page = () => {
     const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>();
-    const [validationErrors, setValidationErrors] = useState<Dictionary<string>>();
 
     const handleSubmit = useCallback(
         (ev: FormEvent<HTMLFormElement>) => {
@@ -44,12 +41,7 @@ const Page = () => {
     );
 
     useEffect(() => {
-        client
-            .me({ setLoading })
-            .then((res) => {
-                setUser(res);
-            })
-            .catch((err) => setError(err.message || "Failed to load user data"));
+        client.me({ setLoading }).then((res) => setUser(res));
     }, []);
 
     return (
@@ -83,7 +75,7 @@ const Page = () => {
                         ></Input>
                         <Input label="Last Name" name="lastName" value={user?.lastName} setter={updateUser}></Input>
 
-                        <Button type="submit" disabled={!user || !!validationErrors}>
+                        <Button type="submit" disabled={!user}>
                             Update
                         </Button>
                         <Button type="reset" outline={true} disabled={loading}>

@@ -1,5 +1,5 @@
 import config from "core/config";
-import { sendNotification, formatAuthError, formatError } from "core/hooks/useAppNotifier";
+import { sendNotification, formatError } from "core/hooks/useAppNotifier";
 import { User, DbUser } from "core/models/user";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import * as moment from "moment";
@@ -19,34 +19,52 @@ export function isTokenNotExpired(token: JwtPayload) {
     return moment.unix(token.exp).isAfter(moment.utc());
 }
 
-export class AuthenticationError extends Error {
-    code: number;
+export class HttpError extends Error {
+    status: number;
 
-    constructor(public message: string = "Authentication error", code = 0) {
+    constructor(status: number, message = "HTTP error") {
         super(message);
 
-        this.name = "AuthenticationException";
-        this.code = code;
-        Error.captureStackTrace(this, AuthenticationError);
+        this.status = status;
+        this.name = this.constructor.name;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+export class RequestError extends HttpError {
+    constructor(status = 0, message = "Request error") {
+        super(status, message);
+    }
+}
+
+export class ServerError extends HttpError {
+    constructor(status = 0, message = "Server error") {
+        super(status, message);
+    }
+}
+
+export class AuthenticationError extends RequestError {
+    constructor(status: number, message?: string) {
+        if (!message) {
+            message = `Authentication error, status: ${status}`;
+        }
+        super(status, message);
     }
 
-    static fromCode(code: number): AuthenticationError {
-        if (code === 401) {
-            return new AuthenticationError("Invalid credentials", code);
-        } else if (code === 403) {
-            return new AuthenticationError("Not enough permissions", code);
+    static fromStatus(status: number): AuthenticationError {
+        if (status === 401) {
+            return new AuthenticationError(status, "Invalid user credentials");
+        } else if (status === 403) {
+            return new AuthenticationError(status, "Not enough permissions");
         } else {
-            return new AuthenticationError("Authentication error", code);
+            return new AuthenticationError(status, "Authentication error");
         }
     }
 }
 
 export class AuthTokenExpiredError extends AuthenticationError {
     constructor(public message: string = "Authentication token expired") {
-        super(message);
-
-        this.name = "AuthTokenExpiredException";
-        Error.captureStackTrace(this, AuthTokenExpiredError);
+        super(401, message);
     }
 }
 
@@ -62,9 +80,7 @@ export class JsonResponse<T = unknown> extends Response {
 
 export interface ApiOptions {
     headers?: Record<string, string>;
-    skipAuthCheck?: boolean;
-    skipStatusCheck?: boolean;
-    skipErrorCheck?: boolean;
+    throwErrors?: boolean;
     setLoading?: (state: boolean) => void;
 }
 
@@ -84,7 +100,7 @@ export class APIClient {
             form.append(key, item[key].toString());
         }
 
-        const response = await this.post<ApiTokenResponse>("/auth/login", form, { skipAuthCheck: true });
+        const response = await this.post<ApiTokenResponse>("/auth/login", form, { throwErrors: true });
 
         if (response.data?.access_token) {
             localStorage.setItem(API_TOKEN, response.data?.access_token);
@@ -154,18 +170,13 @@ export class APIClient {
             );
             result = response as JsonResponse<T>;
         } catch (e) {
-            if (options.skipErrorCheck) {
-                const ex = e as Error;
-                sendNotification(
-                    formatError(ex.toString(), {
-                        name: ex.name,
-                        stack: ex.stack,
-                    })
-                );
-                return result;
+            if (options.throwErrors) {
+                throw e;
             }
 
-            throw e;
+            const ex = e as Error;
+            sendNotification(formatError(ex));
+            return result;
         } finally {
             options?.setLoading?.(false);
         }
@@ -174,16 +185,22 @@ export class APIClient {
             result.data = (await result.json()) as T;
         }
 
-        if (!options.skipAuthCheck) {
-            if ([401, 403].includes(result.status)) {
-                sendNotification(formatAuthError(AuthenticationError.fromCode(result.status)));
-            }
+        let ex: Error | undefined;
+        if ([401, 403].includes(result.status)) {
+            localStorage.removeItem(API_TOKEN);
+            window.postMessage(API_TOKEN);
+            ex = AuthenticationError.fromStatus(result.status);
+        } else if (result.status > 499) {
+            ex = new ServerError(result.status, result.statusText);
+        } else if (result.status > 399) {
+            ex = new RequestError(result.status, result.statusText);
         }
-        if (!options.skipStatusCheck) {
-            if (result.status > 499) {
-                sendNotification(formatError(`${result.statusText || "Server error"} ${result.status}`));
-            } else if (result.status > 399) {
-                sendNotification(formatError(`${result.statusText || "Request error"} ${result.status}`));
+
+        if (ex) {
+            if (options.throwErrors) {
+                throw ex;
+            } else {
+                sendNotification(formatError(ex));
             }
         }
 

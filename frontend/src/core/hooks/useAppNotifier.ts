@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Dictionary } from "types/common";
 import { ThailwindColorStr } from "ui/thailwind";
 
 export type NotificationType = "auth_error" | "api_error" | "error" | "warning" | "success" | "info";
@@ -17,24 +16,15 @@ class AppNotification {
     [key: string]: string | number | boolean | undefined;
 }
 
-export function formatAuthError(data: Dictionary<string> | Error = {}): AppNotification {
-    const notify = new AppNotification("auth_error");
-    if (!(data instanceof Error)) {
-        for (const key in data) {
-            notify[key] = data[key];
-        }
-    }
-    notify.message ||= "Authentication error, please log in again.";
-
-    return notify;
-}
-
-export function formatError(message: string, data: Dictionary<string> = {}): AppNotification {
+export function formatError(error: string | Error): AppNotification {
     const notify = new AppNotification("error");
-    notify.message = message;
 
-    for (const key in data) {
-        notify[key] = data[key];
+    if (error instanceof Error) {
+        notify.message = error.message || error.toString();
+        notify["name"] = error.name;
+        notify["stack"] = error.stack;
+    } else {
+        notify.message = error;
     }
 
     return notify;
@@ -56,7 +46,8 @@ export function useAppNotificationListener(): [
     notification: AppNotification | undefined,
     reset: () => void,
     text: string,
-    color: ThailwindColorStr
+    color: ThailwindColorStr,
+    title?: string
 ] {
     const [notification, setNotification] = useState<AppNotification>();
     const closeAlert = useCallback(() => setNotification(undefined), [setNotification]);
@@ -79,6 +70,11 @@ export function useAppNotificationListener(): [
         [notification]
     );
 
+    const alertTitle = useMemo<string>(
+        () => (notification?.type?.includes("error") ? "Error" : notification?.type === "warning" ? "Warning" : ""),
+        [notification]
+    );
+
     const alertText = useMemo<string>(() => notification?.message || notification?.type || "Error", [notification]);
 
     useEffect(() => {
@@ -86,5 +82,5 @@ export function useAppNotificationListener(): [
         return () => clearTimeout(ts);
     }, [closeAlert, notification]);
 
-    return [notification, closeAlert, alertText, alertColor];
+    return [notification, closeAlert, alertText, alertColor, alertTitle];
 }

@@ -21,12 +21,7 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
                 }
             } catch (e) {
                 if (e instanceof Error) {
-                    notify(
-                        formatError(e.toString(), {
-                            name: e.name,
-                            stack: e.stack,
-                        })
-                    );
+                    notify(formatError(e));
                 }
                 setUser(undefined);
             }

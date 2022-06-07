@@ -1,13 +1,13 @@
-import aioredis
+import aioredis.client
 from fastapi import Depends, HTTPException, status
 
 from app.core.config import settings
 from app.core import util
-
+from app.core.global_app import redis_connection_pool
 
 # Dependency
 async def get_redis():
-    r = await aioredis.from_url(settings.REDIS_URI, decode_responses=True)
+    r = aioredis.client.Redis(connection_pool=redis_connection_pool)
     try:
         yield r
     finally:

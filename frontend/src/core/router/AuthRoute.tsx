@@ -15,7 +15,7 @@ function AuthRoute(props: AuthRouteProps) {
         return null;
     }
 
-    return React.useMemo<JSX.Element>(() => (user ? cmp : <Login />) as JSX.Element, [user]);
+    return React.useMemo<JSX.Element>(() => (user ? cmp : <Login />) as JSX.Element, [user, cmp]);
 }
 
 export default AuthRoute;

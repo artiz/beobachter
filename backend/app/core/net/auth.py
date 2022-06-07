@@ -82,7 +82,7 @@ async def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ):
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
+        raise HTTPException(status_code=401, detail="Inactive user")
     return current_user
 
 
@@ -113,8 +113,11 @@ async def authenticate_user(db, email: str, password: str):
     user = await get_user_by_email(db, email)
     if not user:
         return False
+    if not user.is_active:
+        return False
     if not security.verify_password(password, user.hashed_password):
         return False
+
     return user
 
 

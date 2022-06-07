@@ -16,12 +16,8 @@ const Monitoring = () => {
     const [vmHistory, setVmHistory] = useState<NumDictionary[]>([]);
 
     useEffect(() => {
-        client
-            .get<RawMetrics>("/system/metrics/cpu_p", { skipErrorCheck: true })
-            .then((res) => setCpuHistory(parseMetrics(res.data, "cpu_p")));
-        client
-            .get<RawMetrics>("/system/metrics/vm_p", { skipErrorCheck: true })
-            .then((res) => setVmHistory(parseMetrics(res.data, "vm_p")));
+        client.get<RawMetrics>("/system/metrics/cpu_p").then((res) => setCpuHistory(parseMetrics(res.data, "cpu_p")));
+        client.get<RawMetrics>("/system/metrics/vm_p").then((res) => setVmHistory(parseMetrics(res.data, "vm_p")));
     }, []);
 
     useEffect(() => {
