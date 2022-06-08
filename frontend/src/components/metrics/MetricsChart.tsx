@@ -128,13 +128,15 @@ export default function Cmp({
                     <YAxis domain={yRange} />
                     <Tooltip labelFormatter={formatDate} />
 
-                    <ReferenceArea
-                        isFront={true}
-                        ifOverflow="visible"
-                        fill="#cccccc"
-                        x1={zoomDomain?.[0]}
-                        x2={zoomDomain?.[1]}
-                    />
+                    {zoomDomain && (
+                        <ReferenceArea
+                            isFront={true}
+                            ifOverflow="visible"
+                            fill="#cccccc"
+                            x1={zoomDomain?.[0]}
+                            x2={zoomDomain?.[1]}
+                        />
+                    )}
                     <Line
                         type="monotone"
                         name={title}

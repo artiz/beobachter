@@ -1,14 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import React from "react";
+import { useState, useEffect } from "react";
 import { API_TOKEN, isTokenNotExpired } from "core/api/client";
 import { User, JwtUser } from "core/models/user";
 import jwtDecode from "jwt-decode";
-import { useAppNotifier, useAppNotificationListener, formatError } from "./useAppNotifier";
+import { useAppNotifier, formatError } from "./useAppNotifier";
 
-export function useAuthStatus(): [User | undefined, boolean, () => void] {
-    const [user, setUser] = useState<User>();
-    const [loading, setLoading] = useState<boolean>(true);
+const emptyUser = null as unknown as User;
+
+export const AuthContext = React.createContext<User>(emptyUser);
+
+export function useAuthStatus(): [User, boolean] {
+    const [user, setUser] = useState<User>(emptyUser);
+    const [initialized, setInitialized] = useState<boolean>(false);
     const [notify] = useAppNotifier();
-    const [notification] = useAppNotificationListener();
 
     const loadToken = () => {
         const token = localStorage.getItem(API_TOKEN);
@@ -23,10 +27,10 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
                 if (e instanceof Error) {
                     notify(formatError(e));
                 }
-                setUser(undefined);
+                setUser(emptyUser);
             }
         } else {
-            setUser(undefined);
+            setUser(emptyUser);
         }
     };
 
@@ -42,23 +46,12 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
         }
     };
 
-    const doLogout = useCallback(() => {
-        localStorage.removeItem(API_TOKEN);
-        setUser(undefined);
-        window.postMessage(API_TOKEN);
-    }, []);
-
-    useEffect(() => {
-        if (notification?.type === "auth_error") {
-            doLogout();
-        }
-    }, [notification, doLogout]);
-
+    // auth entry point
     useEffect(() => {
         loadToken();
         window.addEventListener("storage", handleStorageUpdate);
         window.addEventListener("message", handleMessage);
-        setLoading(false);
+        setInitialized(true);
 
         return () => {
             window.removeEventListener("storage", handleStorageUpdate);
@@ -66,5 +59,5 @@ export function useAuthStatus(): [User | undefined, boolean, () => void] {
         };
     }, []);
 
-    return [user, loading, doLogout];
+    return [user, initialized];
 }

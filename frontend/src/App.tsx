@@ -5,23 +5,34 @@ import Header from "components/header/Header";
 import Footer from "components/Footer";
 import { Home, Monitoring, Error, Login, SignUp, Account } from "pages";
 import AuthRoute from "core/router/AuthRoute";
-import { useAuthStatus } from "core/hooks/useAuthStatus";
+import { AuthContext, useAuthStatus } from "core/hooks/useAuthStatus";
 import { useAppNotificationListener } from "core/hooks/useAppNotifier";
 import Alert from "components/state/Alert";
 
 import "App.css";
 
+const AppRoutes = () => (
+    <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/monitoring" element={<AuthRoute cmp={<Monitoring />} />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/account" element={<AuthRoute cmp={<Account />} />} />
+        <Route path="*" element={<Error />} />
+    </Routes>
+);
+
 function App() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [user, userLoading] = useAuthStatus();
+    const [user, userLoaded] = useAuthStatus();
     const [notification, closeAlert, alertText, alertColor, alertTitle] = useAppNotificationListener();
 
-    if (userLoading) {
+    if (!userLoaded) {
         return null;
     }
 
     return (
-        <>
+        <AuthContext.Provider value={user}>
             {notification && (
                 <Alert
                     title={alertTitle}
@@ -35,26 +46,14 @@ function App() {
             )}
             <div className="h-screen flex flex-col bg-zinc-200">
                 <BrowserRouter>
-                    <Header />
+                    <Header user={user} />
                     <div className="flex-grow container w-full mx-auto mb-10">
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/home" element={<Home />} />
-                            <Route
-                                path="/monitoring"
-                                element={<AuthRoute loading={userLoading} cmp={<Monitoring />} />}
-                            />
-                            <Route path="/signup" element={<SignUp />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/account" element={<AuthRoute loading={userLoading} cmp={<Account />} />} />
-
-                            <Route path="*" element={<Error />} />
-                        </Routes>
+                        <AppRoutes />
                     </div>
                     <Footer />
                 </BrowserRouter>
             </div>
-        </>
+        </AuthContext.Provider>
     );
 }
 

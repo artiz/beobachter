@@ -3,13 +3,16 @@ import { Link } from "react-router-dom";
 
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import config from "core/config";
-import { useAuthStatus } from "core/hooks/useAuthStatus";
 import UserMenu from "./UserMenu";
 import HeaderLink from "./HeaderLink";
 import SearchBox from "./SearchBox";
+import { User } from "core/models/user";
 
-function Header() {
-    const [user, userLoading] = useAuthStatus();
+interface HeaderProps {
+    user: User;
+}
+
+function Header({ user }: HeaderProps) {
     const [showNav, setShowNav] = useState<boolean>(false);
     const toggleNav = useCallback(() => {
         setShowNav(!showNav);
@@ -44,26 +47,23 @@ function Header() {
                     </div>
                     <div className="w-1/2 pr-0">
                         <div className="text-sm flex relative inline-block float-right">
-                            {user ? (
-                                <UserMenu />
-                            ) : userLoading ? (
-                                <span>&nbsp;</span>
-                            ) : (
-                                <>
-                                    <Link
-                                        to={"/login"}
-                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
-                                    >
-                                        Login
-                                    </Link>
-                                    <Link
-                                        to={"/signup"}
-                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
-                                    >
-                                        Signup
-                                    </Link>
-                                </>
-                            )}
+                            user ? (
+                            <UserMenu user={user} />) : (
+                            <>
+                                <Link
+                                    to={"/login"}
+                                    className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    to={"/signup"}
+                                    className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
+                                >
+                                    Signup
+                                </Link>
+                            </>
+                            )
                             <div className="block lg:hidden pr-4 ml-2">
                                 <button
                                     onClick={toggleNav}
@@ -79,9 +79,7 @@ function Header() {
 
                     <div className={navBarCls}>
                         <ul className="list-reset lg:flex flex-1 items-center px-4 md:px-0">
-                            <>
-                                <HeaderLink path="/home" title="Home" color="blue" icon="home" />
-                            </>
+                            <HeaderLink path="/home" title="Home" color="blue" icon="home" />
                             {user && (
                                 <>
                                     <HeaderLink path="/monitoring" title="Monitoring" color="green" icon="chart-area" />

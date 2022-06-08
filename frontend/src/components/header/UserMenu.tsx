@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
-import { useAuthStatus } from "core/hooks/useAuthStatus";
 import { Menu, LinkMenuItem, MenuSeparator } from "components/dropdown";
+import { doLogout } from "core/api/client";
+import { User } from "core/models/user";
 
-function UserMenu() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [user, _, doLogout] = useAuthStatus();
+interface IProps {
+    user: User;
+}
+function UserMenu({ user }: IProps) {
     const userName = useMemo(() => user?.firstName || user?.email || "Profile", [user]);
     const avatar = useMemo<string | undefined>(() => user?.avatarUrl, [user]);
 

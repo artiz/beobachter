@@ -3,13 +3,12 @@ import config from "core/config";
 import { Menu, MenuItem, MenuSeparator } from "components/dropdown";
 import Button from "components/button/Button";
 import { ThailwindColor, ThailwindColorStr } from "ui/thailwind";
-import { useAuthStatus } from "core/hooks/useAuthStatus";
+import { AuthContext } from "core/hooks/useAuthStatus";
 import Widget from "components/widget/Widget";
 import WidgetLink from "components/widget/WidgetLink";
 import Alert from "components/state/Alert";
 
 const Home = () => {
-    const [user] = useAuthStatus();
     return (
         <div className="w-full flex flex-wrap flex-grow">
             <div className="flex flex-wrap flex-grow w-full">
@@ -51,12 +50,16 @@ const Home = () => {
                             <li>Basic UI Widgets system</li>
                         </ul>
 
-                        {!user && (
-                            <p className="pt-5 text-amber-700">
-                                Please <WidgetLink href="/login">login</WidgetLink> to get access to additional
-                                functionality
-                            </p>
-                        )}
+                        <AuthContext.Consumer>
+                            {(user) =>
+                                user ? null : (
+                                    <p className="pt-5 text-amber-700">
+                                        Please <WidgetLink href="/login">login</WidgetLink> to get access to additional
+                                        functionality
+                                    </p>
+                                )
+                            }
+                        </AuthContext.Consumer>
                     </article>
                 </Widget>
                 <Widget title="API" size="1/4" color="emerald">

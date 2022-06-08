@@ -4,13 +4,6 @@ import { User, DbUser } from "core/models/user";
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import * as moment from "moment";
 
-interface ApiTokenResponse {
-    access_token: string;
-    token_type: string; // "bearer"
-}
-
-export const API_TOKEN = "auth_token";
-
 export function isTokenNotExpired(token: JwtPayload) {
     if (!token.exp) {
         return;
@@ -18,6 +11,8 @@ export function isTokenNotExpired(token: JwtPayload) {
 
     return moment.unix(token.exp).isAfter(moment.utc());
 }
+
+// #region HTTP exceptions
 
 export class HttpError extends Error {
     status: number;
@@ -68,6 +63,8 @@ export class AuthTokenExpiredError extends AuthenticationError {
     }
 }
 
+// #endregion
+
 export class JsonResponse<T = unknown> extends Response {
     data: T & { detail?: string };
 
@@ -76,6 +73,13 @@ export class JsonResponse<T = unknown> extends Response {
 
         this.data = d;
     }
+}
+
+export const API_TOKEN = "auth_token";
+
+interface ApiTokenResponse {
+    access_token: string;
+    token_type: string; // "bearer"
 }
 
 export interface ApiOptions {
@@ -130,11 +134,7 @@ export class APIClient {
     async register(user: DbUser): Promise<User> {
         const response = await this.post<AccountResponse>("/auth/signup", JSON.stringify(user), { throwErrors: true });
         // login the user
-        if (response.data?.token?.access_token) {
-            localStorage.setItem(API_TOKEN, response.data?.token?.access_token);
-            window.postMessage(API_TOKEN);
-        }
-
+        this.loadToken(response.data?.token?.access_token);
         return User.fromDbUser(response.data);
     }
 
@@ -266,4 +266,9 @@ export class APIClient {
     }
 
     // #endregion
+}
+
+export function doLogout() {
+    localStorage.removeItem(API_TOKEN);
+    window.postMessage(API_TOKEN);
 }
