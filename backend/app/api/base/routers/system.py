@@ -1,6 +1,8 @@
+import asyncio
+import sys
+import orjson
 from fastapi import APIRouter, WebSocket, Depends, Response, HTTPException, status
 from typing import List, Optional
-import asyncio
 
 from app.core.net.auth import (
     check_current_active_user,
@@ -16,6 +18,10 @@ from app.db.session import get_db
 from app.core.schemas.metrics import PerfMetrics
 
 system_router = r = APIRouter()
+
+modules_info = [
+    {"name": k, "version": v.__version__} for k, v in sys.modules.items() if hasattr(v, "__version__") and not "." in k
+]
 
 
 @r.websocket("/system/ws_metrics")
@@ -62,3 +68,14 @@ async def system_metrics(
     points = await metrics_svc.get_metrics(metric)
 
     return points
+
+
+@r.get("/system/modules")
+async def system_modules():
+    return modules_info
+
+
+@r.get("/system/modules_fast")
+async def system_modules():
+    """test complex objects serialization with orjson"""
+    return Response(content=orjson.dumps(modules_info), media_type="application/json")

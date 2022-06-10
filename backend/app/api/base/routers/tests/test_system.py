@@ -49,3 +49,13 @@ async def test_metrics_invalid(client, superuser_token_headers):
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Incorrect metric name: invalid"}
+
+
+async def test_modules_json(client, superuser_token_headers):
+    response = await client.get("/api/system/modules")
+    response_fast = await client.get("/api/system/modules_fast")
+
+    assert response.status_code == 200
+    assert response_fast.status_code == 200
+
+    assert response.json() == response_fast.json()
