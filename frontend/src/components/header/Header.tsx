@@ -47,23 +47,24 @@ function Header({ user }: HeaderProps) {
                     </div>
                     <div className="w-1/2 pr-0">
                         <div className="text-sm flex relative inline-block float-right">
-                            user ? (
-                            <UserMenu user={user} />) : (
-                            <>
-                                <Link
-                                    to={"/login"}
-                                    className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    to={"/signup"}
-                                    className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
-                                >
-                                    Signup
-                                </Link>
-                            </>
-                            )
+                            {user ? (
+                                <UserMenu user={user} />
+                            ) : (
+                                <>
+                                    <Link
+                                        to={"/login"}
+                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        to={"/signup"}
+                                        className="px-4 py-2 block text-zinc-100 hover:bg-zinc-800 no-underline hover:no-underline"
+                                    >
+                                        Signup
+                                    </Link>
+                                </>
+                            )}
                             <div className="block lg:hidden pr-4 ml-2">
                                 <button
                                     onClick={toggleNav}
