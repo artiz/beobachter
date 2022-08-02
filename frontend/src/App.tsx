@@ -44,7 +44,7 @@ function App() {
                     {alertText}
                 </Alert>
             )}
-            <div className="h-screen flex flex-col bg-zinc-200">
+            <div className="h-full flex flex-col bg-zinc-200">
                 <BrowserRouter>
                     <Header user={user} />
                     <div className="flex-grow container w-full mx-auto mb-10">

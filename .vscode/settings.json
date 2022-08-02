@@ -14,5 +14,10 @@
     },
     "[svg]": {
         "editor.defaultFormatter": "jock.svg"
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#600329",
+        "titleBar.activeBackground": "#860439",
+        "titleBar.activeForeground": "#FFFBFD"
     }
 }

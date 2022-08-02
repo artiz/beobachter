@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
+import sys
 import asyncio
+
+sys.path.append(".")
+
 from app.db.crud import create_user
 from app.core.schemas.schemas import UserCreate
 from app.db.session import session
 
 
 async def create_superuser(db) -> None:
-    await create_user(
+    user = await create_user(
         db,
         UserCreate(
             email="admin5@fastapi-react-project.com",
@@ -19,6 +23,7 @@ async def create_superuser(db) -> None:
     )
 
     await db.close()
+    return user
 
 
 async def init():
@@ -29,7 +34,7 @@ async def init():
         user = await create_superuser(db)
         print(f"Superuser {user.email} created")
     except Exception as e:
-        print("Superuser creation failed: ", e)
+        print("Superuser creation failed: ", repr(e))
 
     await db.close()
 
