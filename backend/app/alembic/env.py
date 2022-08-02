@@ -47,7 +47,10 @@ def run_migrations_offline():
     """
     url = get_url()
     context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"},
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():
@@ -70,7 +73,12 @@ async def run_migrations_online():
     configuration["sqlalchemy.url"] = get_url()
 
     connectable = AsyncEngine(
-        engine_from_config(configuration, prefix="sqlalchemy.", poolclass=pool.NullPool, future=True,)
+        engine_from_config(
+            configuration,
+            prefix="sqlalchemy.",
+            poolclass=pool.NullPool,
+            future=True,
+        )
     )
 
     async with connectable.connect() as connection:
