@@ -52,8 +52,8 @@
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test",
-        "test:all": "react-scripts test --watchAll=false",
+        "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!d3-shape)/\"",
+        "test:all": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!d3-shape)/\"",
         "eject": "react-scripts eject",
         "build:thailwind": "node ./scripts/build-thailwind-colors.js && node ./scripts/build-thailwind-widths.js"
     },
