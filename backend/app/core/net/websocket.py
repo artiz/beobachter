@@ -19,7 +19,8 @@ class ConnectionManager:
         return id
 
     async def disconnect(self, socket_id: str):
-        if not isinstance(socket_id, str): raise TypeError("'id' must be str")
+        if not isinstance(socket_id, str):
+            raise TypeError("'id' must be str")
         websocket = self.active_connections.pop(socket_id, None)
         if websocket:
             await websocket.close()

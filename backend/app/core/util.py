@@ -10,8 +10,9 @@ from aiologger.utils import CallableWrapper
 
 rnd = random.SystemRandom()
 
+
 def uuid4_fast():
-    return UUID(int=rnd.getrandbits(k = 128), version=4)
+    return UUID(int=rnd.getrandbits(k=128), version=4)
 
 
 def init_logger(name: str = "app", json_format: bool = False):
