@@ -16,6 +16,10 @@ DAY = 24 * HOUR
 
 
 class PerfMetricsLoader:
+    r: redis.Redis
+    start: int
+    ts: redis.client.TimeSeries
+    
     def __init__(self) -> None:
         self.logger = get_task_logger("PerfMetricsLoader")
 

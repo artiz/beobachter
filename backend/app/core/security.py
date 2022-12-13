@@ -13,9 +13,6 @@ from app.core.schemas.schemas import Token
 class AuthPasswordBearer(OAuth2PasswordBearer):
     """Stub class to get Auth working in API docs and on WS connection"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     async def __call__(self) -> Optional[str]:
         return None
 

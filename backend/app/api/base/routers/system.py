@@ -1,21 +1,20 @@
+"""System routes including metrics and modules info"""
 import asyncio
 import sys
 import orjson
-from fastapi import APIRouter, WebSocket, Depends, Response, HTTPException, status
+from fastapi import APIRouter, WebSocket, Depends, Response, status
 from typing import List, Optional
 
 from app.core.net.auth import (
     check_current_active_user,
-    get_current_active_user,
     get_jwt_token_decoder,
 )
 from app.core.config import settings
 from app.core.net.websocket import ConnectionManager
 from app.api.dependencies.management import get_system_metrics_manager
-from app.api.dependencies.common import get_metrics_service, get_redis, get_log
-from app.core import util
+from app.api.dependencies.common import get_metrics_service, get_log
 from app.db.session import get_db
-from app.core.schemas.metrics import PerfMetrics
+# from app.core.schemas.metrics import PerfMetrics
 
 system_router = r = APIRouter()
 
@@ -59,7 +58,6 @@ async def ws_system_metrics(
 @r.get("/system/metrics/{metric}")  # , response_model=List[PerfMetrics]
 async def system_metrics(
     metrics_svc=Depends(get_metrics_service),
-    current_user=Depends(get_current_active_user),
     metric: Optional[str] = "cpu_p",
 ):
     """
@@ -76,6 +74,6 @@ async def system_modules():
 
 
 @r.get("/system/modules_fast")
-async def system_modules():
+async def system_modules_fast():
     """test complex objects serialization with orjson"""
     return Response(content=orjson.dumps(modules_info), media_type="application/json")

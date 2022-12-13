@@ -52,9 +52,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
                 hovercolor = color;
             }
         }
-        const {} = props;
         const listItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
-
         const tree = useFloatingTree();
         const nodeId = useFloatingNodeId();
         const parentId = useFloatingParentNodeId();

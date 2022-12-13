@@ -59,7 +59,7 @@ Transfer/sec:    161.25KB
 
 ## Development
 
-The only dependencies for this project should be docker and docker-compose.
+The only dependencies for this project are docker and docker-compose.
 
 ### Quick Start
 

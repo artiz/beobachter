@@ -54,7 +54,7 @@ async def app_shutdown():
 
 
 app.add_middleware(RequestLogMiddleware)
-# app.add_middleware(ProcessTimeMiddleware)
+app.add_middleware(ProcessTimeMiddleware)
 
 
 @app.exception_handler(Exception)

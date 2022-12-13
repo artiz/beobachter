@@ -18,14 +18,14 @@ class ConnectionManager:
         self.active_connections[id] = websocket
         return id
 
-    async def disconnect(self, id: str):
-        assert isinstance(id, str)
-        websocket = self.active_connections.pop(id, None)
+    async def disconnect(self, socket_id: str):
+        if not isinstance(socket_id, str): raise TypeError("'id' must be str")
+        websocket = self.active_connections.pop(socket_id, None)
         if websocket:
             await websocket.close()
 
-    def is_connected(self, id: str):
-        return id in self.active_connections
+    def is_connected(self, socket_id: str):
+        return socket_id in self.active_connections
 
     async def send_message(self, message: str, socket_id: str):
         # KeyError is expected when socket is not connected

@@ -1,11 +1,11 @@
-version: '3.7'
+version: "3.7"
 services:
   nginx:
     image: nginx:1.17
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - 8000:80
+      - 8000:80 # same port (8000) must be used as WDS_SOCKET_PORT in frontend/package.json
     depends_on:
       - backend
       - frontend
@@ -25,15 +25,15 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data:cached
 
-  flower:  
+  flower:
     image: mher/flower
     command: celery --broker=redis://redis:6379/0 flower --port=5555
-    ports:  
-        - 5555:5555
+    ports:
+      - 5555:5555
     depends_on:
       - redis
       - worker
@@ -47,7 +47,7 @@ services:
       - ./backend:/app/:cached
     depends_on:
       - redis
-    
+
   backend:
     container_name: beo_backend
     build:
@@ -56,8 +56,8 @@ services:
     tty: true
     volumes:
       - ./backend:/app/:cached
-    ports:
-      - 8888:8888
+    # ports:
+    #   - 8888:8888
     environment:
       DATABASE_URI: "postgresql+asyncpg://postgres:password@postgres:5432/postgres"
       CELERY_BROKER: "redis://redis:6379/0"
@@ -75,18 +75,19 @@ services:
       context: frontend
       dockerfile: Dockerfile
     stdin_open: true
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
     volumes:
-      - './frontend:/app:cached'
-      - './frontend/node_modules:/app/node_modules:cached'
+      - "./frontend:/app:cached"
+      - "./frontend/node_modules:/app/node_modules:cached"
     environment:
-        NODE_ENV: "development"
-        # REACT_APP_API_BASE_PATH: "http://localhost:8000/api"
-        REACT_APP_API_BASE_PATH: "/api"
-        REACT_APP_MODE: "development"
+      NODE_ENV: "development"
+      # REACT_APP_API_BASE_PATH: "http://localhost:8000/api"
+      REACT_APP_API_BASE_PATH: "/api"
+      REACT_APP_MODE: "development"
     command: bash /app/run.sh start
 
 volumes:
   db-data:
-  redis-data:
+    driver: local
+  redis-data: {}
