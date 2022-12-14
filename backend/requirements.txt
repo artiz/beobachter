@@ -1,13 +1,13 @@
 aioredis==2.0.1
 aiologger===0.6.1
 alembic==1.7.1
-Authlib==0.14.3
+Authlib==1.1.0
 anyio==3.6.1
 asyncpg==0.25.0
 fastapi==0.78.0
-celery==5.2.0
+celery==5.2.2
 gunicorn==20.1.0
-httpx==0.15.5
+httpx==0.23.0
 ipython==7.31.1
 itsdangerous==1.1.0
 orjson==3.7.2
@@ -23,6 +23,8 @@ passlib==1.7.4
 bcrypt==3.2.2
 sqlalchemy-utils==0.38.2
 python-multipart==0.0.5
-pyjwt==1.7.1
+pyjwt==2.4.0
 psutil==5.8.0
 websockets==10.3
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+urllib3>=1.26.5 # not directly required, pinned by Snyk to avoid a vulnerability
