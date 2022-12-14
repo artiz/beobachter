@@ -1,4 +1,4 @@
-FROM node:19.2
+FROM node:19.2-slim
 
 ADD package.json /package.json
 
