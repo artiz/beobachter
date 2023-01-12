@@ -28,6 +28,6 @@ RUN chown -R unit:unit .
 
 COPY config.json /docker-entrypoint.d/config.json
 
-# run the app (from parent Unint image)
+# run the app (from parent Unit image)
 # ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # CMD ["unitd", "--no-daemon", "--control", "unix:/var/run/control.unit.sock"]
