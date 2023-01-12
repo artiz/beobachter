@@ -65,12 +65,12 @@ export class AuthTokenExpiredError extends AuthenticationError {
 
 // #endregion
 
-export class JsonResponse<T = unknown> extends Response {
-    data: T & { detail?: string };
+export type JsonResponseType<T> = T & { detail?: string };
+export class JsonResponse<T = Record<string, object>> extends Response {
+    data: JsonResponseType<T>;
 
-    constructor(d: T) {
+    constructor(d: JsonResponseType<T>) {
         super();
-
         this.data = d;
     }
 }
@@ -201,7 +201,7 @@ export class APIClient {
         }
 
         if (result?.headers?.get("content-type")?.includes("json")) {
-            result.data = (await result.json()) as T;
+            result.data = (await result.json()) as JsonResponseType<T>;
         }
 
         let ex: Error | undefined;

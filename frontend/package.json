@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "@floating-ui/react-dom-interactions": "^0.12.0",
+        "@floating-ui/react": "0.17.0",
         "@fortawesome/fontawesome-svg-core": "^6.2.1",
         "@fortawesome/free-solid-svg-icons": "^6.2.1",
         "@fortawesome/react-fontawesome": "^0.2.0",
@@ -51,10 +51,10 @@
     },
     "scripts": {
         "start": "WDS_SOCKET_PORT=8000 react-scripts start",
+        "start:dev": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!d3-shape)/\"",
         "test:all": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!d3-shape)/\"",
-        "eject": "react-scripts eject",
         "build:thailwind": "node ./scripts/build-thailwind-colors.js && node ./scripts/build-thailwind-widths.js"
     },
     "browserslist": {

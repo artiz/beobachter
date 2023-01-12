@@ -7,7 +7,7 @@ case $1 in
     npm start | cat
     ;;
   build)
-    npm build
+    npm run build
     ;;
   test)
     npm test $@

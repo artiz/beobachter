@@ -1,18 +1,17 @@
 FROM node:19.2-slim
 
-ADD package.json /package.json
+WORKDIR /app/
 
-ENV NODE_PATH=/node_modules
-ENV PATH=$PATH:/node_modules/.bin
+COPY package.json .
 RUN npm install
 
-WORKDIR /app
-ADD . /app
+COPY . .
+
+RUN npm run build
 
 # hot reload
 EXPOSE 35729
 # web
 EXPOSE 3000 
 
-# ENTRYPOINT ["/bin/bash", "/app/run.sh"]
 # CMD ["start"]

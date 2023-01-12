@@ -23,7 +23,7 @@ import {
     FloatingNode,
     FloatingTree,
     FloatingFocusManager,
-} from "@floating-ui/react-dom-interactions";
+} from "@floating-ui/react";
 
 import mergeRefs from "react-merge-refs";
 import { ThailwindColorStr } from "ui/thailwind";
@@ -80,7 +80,6 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
             }),
             useClick(context, {
                 toggle: !nested,
-                pointerDown: true,
                 ignoreMouse: nested,
             }),
             useRole(context, { role: "menu" }),
@@ -104,7 +103,7 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
             function onTreeClick() {
                 setOpen(false);
                 if (parentId === null) {
-                    refs.reference.current?.focus();
+                    refs.domReference.current?.focus();
                 }
             }
 
@@ -201,7 +200,6 @@ export const MenuComponent = forwardRef<HTMLButtonElement, MenuProps & React.HTM
                     {open && (
                         <FloatingFocusManager
                             context={context}
-                            preventTabbing
                             modal={!nested}
                             // Touch-based screen readers will be able to navigate back to the
                             // reference and click it to dismiss the menu without clicking an item.
