@@ -1,12 +1,12 @@
 FROM node:19.2-slim
 
-WORKDIR /app/
+ADD package.json /package.json
 
-COPY package.json .
+ENV NODE_PATH=/node_modules
+ENV PATH=$PATH:/node_modules/.bin
 RUN npm install
 
-ENV PATH=$PATH:/app/node_modules/.bin
-
+WORKDIR /app/
 COPY . .
 
 RUN npm run build
