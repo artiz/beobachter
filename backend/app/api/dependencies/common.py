@@ -5,6 +5,7 @@ from app.core.config import settings
 from app.core import util
 from app.core.global_app import redis_connection_pool
 
+
 # Dependency
 async def get_redis():
     r = aioredis.client.Redis(connection_pool=redis_connection_pool)

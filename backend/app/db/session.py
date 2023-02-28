@@ -21,6 +21,7 @@ session = sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
 
 Base = declarative_base()
 
+
 # Dependency
 async def get_db():
     db = session()
