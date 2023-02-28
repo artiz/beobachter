@@ -3,6 +3,7 @@ import pytest
 from app.main import app
 from app.core import security
 
+
 # Monkey patch function we can use to shave a second off our tests by skipping the password hashing check
 def verify_password_mock(first: str, second: str):
     return True
