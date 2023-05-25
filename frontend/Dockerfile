@@ -1,4 +1,4 @@
-FROM node:19.7-bullseye-slim
+FROM node:19.9.0-bullseye-slim
 
 ADD package.json /package.json
 
