@@ -19,9 +19,7 @@ from app.db.session import get_db
 system_router = r = APIRouter()
 
 modules_info = [
-    {"name": k, "version": v.__version__}
-    for k, v in sys.modules.items()
-    if hasattr(v, "__version__") and not "." in k
+    {"name": k, "version": v.__version__} for k, v in sys.modules.items() if hasattr(v, "__version__") and not "." in k
 ]
 
 
@@ -41,9 +39,7 @@ async def ws_system_metrics(
     await db.close()
     [current_user, token] = user_data
     if not current_user:
-        await websocket.close(
-            code=status.WS_1008_POLICY_VIOLATION, reason="auth_error"
-        )
+        await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="auth_error")
         return
 
     sock_id = await manager.connect(websocket)
@@ -81,6 +77,4 @@ async def system_modules():
 @r.get("/system/modules_fast")
 async def system_modules_fast():
     """test complex objects serialization with orjson"""
-    return Response(
-        content=orjson.dumps(modules_info), media_type="application/json"
-    )
+    return Response(content=orjson.dumps(modules_info), media_type="application/json")
