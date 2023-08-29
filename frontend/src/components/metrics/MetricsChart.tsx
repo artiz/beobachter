@@ -6,7 +6,9 @@ import { CategoricalChartState } from "recharts/types/chart/generateCategoricalC
 
 import moment from "moment";
 import { NumDictionary } from "types/common";
-type Domain = [number | string, number | string] | undefined;
+
+type Domain = [number | string, number | string];
+type NumberDomain = [number, number];
 
 interface IProps {
     title: string;
@@ -33,21 +35,21 @@ export default function Cmp({
     yRange = [0, "dataMax+5"],
 }: IProps) {
     const [isZooming, setIsZooming] = useState(false);
-    const [zoomDomain, setZoomDomain] = useState<Domain>();
-    const [xDomain, setXDomain] = useState<Domain>();
-    const [filteredData, setFilteredData] = useState<NumDictionary[]>([]);
+    const [zoomDomain, setZoomDomain] = useState<NumberDomain | undefined>();
+    const [xDomain, setXDomain] = useState<NumberDomain | undefined>();
+    const [displayData, setDisplayData] = useState<NumDictionary[]>([]);
 
     useLayoutEffect(() => {
         if (!isZooming && !xDomain) {
-            setFilteredData([...data]);
+            setDisplayData([...data]);
         }
     }, [data]);
 
     const handleZoomOut = useCallback(() => {
         setXDomain(undefined);
         setZoomDomain(undefined);
-        setFilteredData(data);
-    }, []);
+        setDisplayData(data);
+    }, [data]);
 
     const handleMouseDown = useCallback((e: CategoricalChartState) => {
         const ts = +(e?.activeLabel || 0);
@@ -61,14 +63,14 @@ export default function Cmp({
         (e: CategoricalChartState) => {
             if (isZooming && e?.activeLabel !== undefined) {
                 const ts = +e.activeLabel;
-                const domain = zoomDomain ? [...zoomDomain] : [ts, ts];
+                const domain: NumberDomain = zoomDomain ? [...zoomDomain] : [ts, ts];
                 if (ts > domain[0]) {
                     domain[1] = ts;
                 } else {
                     domain[0] = ts;
                 }
 
-                setZoomDomain(domain as Domain);
+                setZoomDomain(domain);
             }
         },
         [isZooming, zoomDomain]
@@ -77,10 +79,10 @@ export default function Cmp({
     const handleMouseUp = useCallback(() => {
         if (isZooming) {
             if (zoomDomain) {
-                setFilteredData(data?.filter((p) => p.ts >= zoomDomain[0] && p.ts <= zoomDomain[1]));
+                setDisplayData(data?.filter((p) => p.ts >= zoomDomain[0] && p.ts <= zoomDomain[1]));
                 setXDomain(zoomDomain);
             } else {
-                setFilteredData(data);
+                setDisplayData(data);
                 setXDomain(undefined);
             }
 
@@ -114,7 +116,7 @@ export default function Cmp({
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
-                    data={filteredData}
+                    data={displayData}
                 >
                     <CartesianGrid strokeDasharray="2 2" />
                     <XAxis

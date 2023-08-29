@@ -15,12 +15,13 @@ from app.api.dependencies.management import get_system_metrics_manager
 from app.api.dependencies.common import get_metrics_service, get_log
 from app.db.session import get_db
 
-# from app.core.schemas.metrics import PerfMetrics
 
 system_router = r = APIRouter()
 
 modules_info = [
-    {"name": k, "version": v.__version__} for k, v in sys.modules.items() if hasattr(v, "__version__") and not "." in k
+    {"name": k, "version": v.__version__}
+    for k, v in sys.modules.items()
+    if hasattr(v, "__version__") and not "." in k
 ]
 
 
@@ -40,7 +41,9 @@ async def ws_system_metrics(
     await db.close()
     [current_user, token] = user_data
     if not current_user:
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="auth_error")
+        await websocket.close(
+            code=status.WS_1008_POLICY_VIOLATION, reason="auth_error"
+        )
         return
 
     sock_id = await manager.connect(websocket)
@@ -56,15 +59,16 @@ async def ws_system_metrics(
         await manager.disconnect(sock_id)
 
 
-@r.get("/system/metrics/{metric}")  # , response_model=List[PerfMetrics]
+@r.get("/system/metrics/{metric}", response_model=List[tuple[int, float]])
 async def system_metrics(
     metrics_svc=Depends(get_metrics_service),
     metric: Optional[str] = "cpu_p",
+    count: int = 100,
 ):
     """
     Get system performance data
     """
-    points = await metrics_svc.get_metrics(metric)
+    points = await metrics_svc.get_metrics(metric, count=count)
 
     return points
 
@@ -77,4 +81,6 @@ async def system_modules():
 @r.get("/system/modules_fast")
 async def system_modules_fast():
     """test complex objects serialization with orjson"""
-    return Response(content=orjson.dumps(modules_info), media_type="application/json")
+    return Response(
+        content=orjson.dumps(modules_info), media_type="application/json"
+    )

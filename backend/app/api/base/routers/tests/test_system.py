@@ -12,7 +12,7 @@ METRICS = {
 
 async def get_metrics_service_mock():
     class Srv:
-        async def get_metrics(self, metric):
+        async def get_metrics(self, metric, count=100):
             if not metric in METRICS:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -25,27 +25,39 @@ async def get_metrics_service_mock():
 
 
 async def test_metrics_cpu(client, superuser_token_headers):
-    app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
+    app.dependency_overrides[
+        dependencies.common.get_metrics_service
+    ] = get_metrics_service_mock
 
-    response = await client.get("/api/system/metrics/cpu_p", headers=superuser_token_headers)
+    response = await client.get(
+        "/api/system/metrics/cpu_p", headers=superuser_token_headers
+    )
 
     assert response.status_code == 200
     assert response.json() == METRICS["cpu_p"]
 
 
 async def test_metrics_vm(client, superuser_token_headers):
-    app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
+    app.dependency_overrides[
+        dependencies.common.get_metrics_service
+    ] = get_metrics_service_mock
 
-    response = await client.get("/api/system/metrics/vm_p", headers=superuser_token_headers)
+    response = await client.get(
+        "/api/system/metrics/vm_p", headers=superuser_token_headers
+    )
 
     assert response.status_code == 200
     assert response.json() == METRICS["vm_p"]
 
 
 async def test_metrics_invalid(client, superuser_token_headers):
-    app.dependency_overrides[dependencies.common.get_metrics_service] = get_metrics_service_mock
+    app.dependency_overrides[
+        dependencies.common.get_metrics_service
+    ] = get_metrics_service_mock
 
-    response = await client.get("/api/system/metrics/invalid", headers=superuser_token_headers)
+    response = await client.get(
+        "/api/system/metrics/invalid", headers=superuser_token_headers
+    )
 
     assert response.status_code == 404
     assert response.json() == {"detail": "Incorrect metric name: invalid"}

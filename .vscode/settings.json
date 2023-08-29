@@ -8,7 +8,7 @@
     "[postcss]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "python.formatting.provider": "black",
+    "python.formatting.provider": "none",
     "[xml]": {
         "editor.defaultFormatter": "mikeburgh.xml-format"
     },
@@ -19,5 +19,8 @@
         "activityBar.background": "#600329",
         "titleBar.activeBackground": "#860439",
         "titleBar.activeForeground": "#FFFBFD"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
     }
 }
