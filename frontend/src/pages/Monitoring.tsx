@@ -7,7 +7,7 @@ import { APIClient } from "core/api/client";
 import { NumDictionary } from "types/common";
 
 type RawMetrics = [number, string][];
-const STEP = 1_000; // ms
+const STEP = 30_000; // ms
 
 const Monitoring = () => {
     const client = new APIClient();
