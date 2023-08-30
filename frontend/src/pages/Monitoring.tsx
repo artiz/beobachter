@@ -7,7 +7,7 @@ import { APIClient } from "core/api/client";
 import { NumDictionary } from "types/common";
 
 type RawMetrics = [number, string][];
-const STEP = 60_000; // ms
+const STEP = 1_000; // ms
 
 const Monitoring = () => {
     const client = new APIClient();
@@ -22,7 +22,7 @@ const Monitoring = () => {
 
     useEffect(() => {
         if (metrics) {
-            const lastTs = cpuHistory?.[cpuHistory?.length - 2]?.ts;
+            const lastTs = cpuHistory?.at(-2)?.ts;
             const point = { cpu_p: metrics.cpu_p ?? 0, vm_p: metrics.vm_p ?? 0, ts: metrics.ts };
             if (lastTs) {
                 if (metrics.ts - lastTs > STEP) {

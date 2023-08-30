@@ -35,19 +35,41 @@ export default function Cmp({
     yRange = [0, "dataMax+5"],
 }: IProps) {
     const [isZooming, setIsZooming] = useState(false);
+    const [updateXDomain, setUpdateXDomain] = useState(false);
     const [zoomDomain, setZoomDomain] = useState<NumberDomain | undefined>();
     const [xDomain, setXDomain] = useState<NumberDomain | undefined>();
     const [displayData, setDisplayData] = useState<NumDictionary[]>([]);
 
+    const loadDisplayData = useCallback(
+        (points: NumDictionary[]) => {
+            if (!points) {
+                setDisplayData([]);
+                return;
+            }
+
+            let domain: NumberDomain | undefined = xDomain;
+            if (updateXDomain && xDomain) {
+                domain = [xDomain[0], points?.at(-1)?.["ts"] ?? xDomain[1]];
+            }
+
+            if (domain) {
+                const [begin, end] = domain;
+                setDisplayData(points.filter((p) => p.ts >= begin && p.ts <= end));
+            } else {
+                setDisplayData(points);
+            }
+        },
+        [setDisplayData, xDomain, updateXDomain]
+    );
+
     useLayoutEffect(() => {
-        if (!isZooming && !xDomain) {
-            setDisplayData([...data]);
+        if (!isZooming) {
+            loadDisplayData(data);
         }
-    }, [data]);
+    }, [data, isZooming, loadDisplayData]);
 
     const handleZoomOut = useCallback(() => {
         setXDomain(undefined);
-        setZoomDomain(undefined);
         setDisplayData(data);
     }, [data]);
 
@@ -78,19 +100,18 @@ export default function Cmp({
 
     const handleMouseUp = useCallback(() => {
         if (isZooming) {
-            if (zoomDomain) {
-                setDisplayData(data?.filter((p) => p.ts >= zoomDomain[0] && p.ts <= zoomDomain[1]));
-                setXDomain(zoomDomain);
+            if (zoomDomain && zoomDomain[1] >= (displayData?.at(-1)?.["ts"] ?? 0 + 30000)) {
+                setUpdateXDomain(true);
             } else {
-                setDisplayData(data);
-                setXDomain(undefined);
+                setUpdateXDomain(false);
             }
 
+            setXDomain(zoomDomain);
             setZoomDomain(undefined);
         }
 
         setIsZooming(false);
-    }, [isZooming, zoomDomain, data]);
+    }, [isZooming, zoomDomain, displayData]);
 
     return (
         <div className="relative h-full w-full select-none">
@@ -126,6 +147,7 @@ export default function Cmp({
                         domain={["dataMin", "dataMax"]}
                         tickFormatter={formatDate}
                         interval="preserveStartEnd"
+                        scale="time"
                     />
                     <YAxis domain={yRange} />
                     <Tooltip labelFormatter={formatDate} />
