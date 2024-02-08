@@ -72,7 +72,7 @@ async def edit_user(db: AsyncSession, user_id: int, user: schemas.UserEdit) -> s
     db_user = await get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
-    update_data = user.dict(exclude_unset=True)
+    update_data = user.model_dump(exclude_unset=True)
 
     if "password" in update_data:
         update_data["hashed_password"] = get_password_hash(user.password)

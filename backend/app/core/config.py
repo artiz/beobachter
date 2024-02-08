@@ -1,6 +1,7 @@
 import os
 from typing import List, Optional
-from pydantic import AnyHttpUrl, BaseSettings, EmailStr, validator
+from pydantic import AnyHttpUrl, EmailStr, validator
+from pydantic_settings import BaseSettings
 from pytz import VERSION
 
 
@@ -19,7 +20,7 @@ class Settings(BaseSettings):
     API_V2: str = "/api/v2"
     JWT_SECRET_KEY: str = "super_secret"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 120
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
 
     # Monitoring
     CELERY_BROKER: str = "redis://redis:6379/0"
