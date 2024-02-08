@@ -25,12 +25,13 @@
         "react-dom": "^17.0.2",
         "react-merge-refs": "^1.1.0",
         "react-router-dom": "^6.4.3",
-        "react-scripts": "5.0.1",
+        "react-scripts": "^5.0.1",
         "recharts": "^2.8.0",
         "typescript": "^4.9.5",
         "web-vitals": "^2.1.4"
     },
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@types/gravatar": "^1.8.3",
         "@typescript-eslint/eslint-plugin": "^5.24.0",
         "@typescript-eslint/parser": "^5.24.0",
