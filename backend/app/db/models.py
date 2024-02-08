@@ -1,4 +1,5 @@
 """SQLAlchemy models"""
+
 from sqlalchemy import Boolean, Column, Integer, String
 
 from .session import Base
