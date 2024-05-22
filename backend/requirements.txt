@@ -17,7 +17,7 @@ pytest-asyncio==0.18.3
 pytest-cov==3.0.0
 pydantic-settings==2.1.0
 redis==4.3.6
-requests==2.31.0
+requests==2.32.0
 SQLAlchemy==1.4.36
 uvicorn==0.17.6
 passlib==1.7.4
