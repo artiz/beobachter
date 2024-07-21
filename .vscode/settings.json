@@ -3,7 +3,7 @@
     "editor.formatOnSave": true,
     "eslint.alwaysShowStatus": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": false
+        "source.fixAll.eslint": "never"
     },
     "[postcss]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
