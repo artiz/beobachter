@@ -33,10 +33,8 @@ jobs:
         with:
           args: './backend --check --line-length 120'
       - name: Build the stack
-        run: docker-compose build
+        run: docker compose build
       - name: Run backend UT
-        run: docker-compose run backend pytest -p no:cacheprovider
+        run: docker compose run backend pytest -p no:cacheprovider
       - name: Run frontend UT
-        run: docker-compose run frontend npm run test:all
-      # - name: Run the stack
-      #   run: docker-compose up -d
+        run: docker compose run frontend npm run test:all
