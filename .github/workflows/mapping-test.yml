@@ -37,14 +37,14 @@ jobs:
           dev)
             echo "keyvault=111111111111" >> $GITHUB_OUTPUT
             ;;
-          dev)
-            echo "keyvault=111111111111" >> $GITHUB_OUTPUT
+          int)
+            echo "keyvault=22222222222" >> $GITHUB_OUTPUT
             ;;
-          dev)
-            echo "keyvault=111111111111" >> $GITHUB_OUTPUT
+          pre-eu)
+            echo "keyvault=33333333333" >> $GITHUB_OUTPUT
             ;;
-          dev)
-            echo "keyvault=111111111111" >> $GITHUB_OUTPUT
+          pre-us)
+            echo "keyvault=44444444444" >> $GITHUB_OUTPUT
             ;;
         esac
     outputs:
