@@ -6,7 +6,7 @@ anyio==4.4.0
 asyncpg==0.25.0
 fastapi==0.109.1
 celery==5.2.2
-gunicorn==22.0.0
+gunicorn==23.0.0
 httpx==0.23.2
 ipython==8.10.0
 itsdangerous==1.1.0
