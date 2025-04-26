@@ -1,4 +1,4 @@
-FROM node:22.13.1-bullseye-slim
+FROM node:22.15.0-bullseye-slim
 
 ADD package.json /package.json
 ADD package-lock.json /package-lock.json
