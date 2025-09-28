@@ -1,4 +1,4 @@
-FROM node:22.16.0-bookworm-slim
+FROM node:22.20.0-bookworm-slim
 
 ADD package.json /package.json
 ADD package-lock.json /package-lock.json
